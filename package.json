@@ -3,10 +3,16 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "scripts": {
+    "start": "concurrently --kill-others-on-fail \"cd backend && bun install --frozen-lockfile && bun run dev\" \"cd frontend && bun run dev\""
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },
   "peerDependencies": {
     "typescript": "^5"
+  },
+  "dependencies": {
+    "concurrently": "^9.2.0"
   }
 }

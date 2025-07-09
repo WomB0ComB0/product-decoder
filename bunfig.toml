@@ -1,0 +1,131 @@
+# bunfig.toml
+
+# =============================================================================
+# Global Runtime Configuration
+# These settings apply to Bun's core runtime behavior.
+# =============================================================================
+
+# Preload scripts or plugins before running a file or script.
+# Useful for setting up global polyfills, environment variables, or custom loaders.
+# preload = ["./scripts/preload.ts"] # Example: Uncomment and adjust path as needed.
+
+# Configure how Bun handles JSX. Useful for non-TypeScript projects.
+# If you have a tsconfig.json, these are often better defined there.
+# [jsx]
+# jsx = "react-jsx"        # Or "react", "preserve", "react-native"
+# jsxFactory = "h"
+# jsxFragment = "Fragment"
+# jsxImportSource = "react" # e.g., "preact"
+
+# Enable "smol" mode to reduce memory usage at the cost of performance.
+# Consider this for memory-constrained environments (e.g., small containers, serverless functions).
+# smol = true
+
+# Set the logging level for Bun. "warn" or "error" are generally good for production.
+# "debug" can be useful for troubleshooting.
+logLevel = "warn" # "debug" | "warn" | "error"
+
+# Define global identifiers to be replaced with constant expressions during build/runtime.
+# [define]
+# "process.env.NODE_ENV" = "'production'" # Example for setting production environment
+# "global.APP_VERSION" = "'1.0.0'"
+
+# Configure custom file extension loaders.
+# [loader]
+# ".svelte" = "tsx" # Example: Treat .svelte files as tsx for basic processing
+
+# Disable telemetry (analytics records) for privacy or compliance reasons.
+# telemetry = false
+
+# =============================================================================
+# Package Manager Configuration ([install] section)
+# These settings control `bun install` behavior.
+# =============================================================================
+
+[install]
+# Set the number of concurrent scripts Bun can run during installation.
+# The comment indicates (cpu count or GOMAXPROCS) x2.
+# 16 is a reasonable default, but you might adjust based on your system's core count.
+concurrentScripts = 16
+
+# When true, `bun install` will not update `bun.lock`.
+# Essential for CI/CD pipelines to ensure reproducible builds.
+# Set to `true` in production or CI/CD contexts. Keep as `false` for local development
+# if you frequently add/update dependencies and want the lockfile to update.
+frozenLockfile = false # Set to `true` for CI/CD or strict dependency management
+
+# Whether to set an exact version in `package.json` instead of caret ranges (`^`).
+# Setting to `true` ensures exact dependency versions are recorded.
+# exact = true
+
+# If false, generates a binary `bun.lockb`. Default `true` generates `bun.lock`.
+# Binary lockfiles can be slightly faster but are not human-readable.
+# saveTextLockfile = false # Uncomment if you prefer binary lockfiles
+
+# Configure Bun's package auto-install behavior.
+# "auto" (default) is generally fine for development.
+# "disable" can be useful in environments where installs should be explicit.
+# auto = "auto" # "auto" | "force" | "disable" | "fallback"
+
+# Configure the default registry.
+# registry = "https://registry.npmjs.org/"
+# For private registries with authentication:
+# registry = { url = "https://registry.my-private-registry.com", token = "$NPM_TOKEN" }
+
+# Configure registry for specific scopes.
+# [install.scopes]
+# myorg = { token = "$NPM_TOKEN", url = "https://registry.myorg.com/" }
+
+# Configure cache directory and behavior.
+# [install.cache]
+# dir = "~/.bun/install/cache" # Custom cache directory
+# disable = false             # When true, don't load from the global cache
+# disableManifest = false     # When true, always resolve the latest versions from the registry
+
+# =============================================================================
+# Test Runner Configuration ([test] section)
+# These settings control `bun test` behavior.
+# =============================================================================
+
+[test]
+# Root directory to run tests from. Default is `.`.
+root = "./tests" # Example: Only run tests within the `src` directory
+
+# Preload scripts specifically for `bun test`.
+# preload = ["./tests/setup.ts"]
+
+# Enable coverage reporting.
+coverage = true # Recommended for project health
+
+# To specify a coverage threshold. If your test suite does not meet this,
+# `bun test` will exit with a non-zero code.
+# coverageThreshold = 0.85 # Require 85% overall coverage
+# Or for more granular control:
+# coverageThreshold = { line = 0.8, function = 0.75, statement = 0.8, branch = 0.7 }
+
+# Whether to skip test files themselves when computing coverage statistics.
+# coverageSkipTestFiles = true
+
+# Configure coverage reporters. "text" for console, "lcov" for CI/CD and tools.
+coverageReporter = ["text", "lcov"] # Good for both console output and CI
+
+# Set path where coverage reports will be saved (only for persistent reporters like lcov).
+coverageDir = "coverage"
+
+# =============================================================================
+# `bun run` Configuration ([run] section)
+# These settings apply to `bun run` commands and when running files/executables.
+# =============================================================================
+
+[run]
+# The shell to use when running package.json scripts.
+# "system" uses your OS shell (bash, zsh, cmd, etc.).
+# "bun" uses Bun's built-in shell. "bun" is default on Windows.
+# shell = "system" # Explicitly use system shell, useful for complex scripts.
+
+# When true, prepends $PATH with a `node` symlink pointing to the `bun` binary.
+# This means scripts calling `node` will actually run with `bun`.
+bun = true # Useful for migrating existing projects to Bun more smoothly.
+
+# Suppress reporting the command being run by `bun run`.
+# silent = false # Set to `true` to make output cleaner, especially for simple scripts.
