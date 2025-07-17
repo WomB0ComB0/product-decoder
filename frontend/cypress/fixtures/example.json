@@ -1,0 +1,18 @@
+{
+  "name": "RamHacks 2025",
+  "location": "Farmingdale State College",
+  "date": "April 26-27, 2025",
+  "participants": 150,
+  "sections": [
+    "hero",
+    "about",
+    "schedule",
+    "clubs",
+    "sponsors",
+    "faq"
+  ],
+  "contacts": {
+    "sponsor": "ferdt4@farmingdale.edu",
+    "registration": "https://forms.gle/Xp6nnGfTPvzb7hFM9"
+  }
+}
