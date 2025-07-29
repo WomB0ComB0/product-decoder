@@ -28,7 +28,7 @@ export const seo = ({
   const imageUrl = `${import.meta.env.VITE_BASE_URL}${image || "/assets/images/logo.png"}`;
   const pageUrl = url || import.meta.env.VITE_BASE_URL;
 
-  const tags = [
+  return [
     { title },
     { name: "description", content: description },
     { name: "keywords", content: keywords },
@@ -62,6 +62,4 @@ export const seo = ({
         ]
       : []),
   ];
-
-  return tags;
 };

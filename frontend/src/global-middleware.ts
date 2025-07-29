@@ -6,6 +6,9 @@ import * as Sentry from "@sentry/tanstackstart-react";
 
 registerGlobalMiddleware({
   middleware: [
-    createMiddleware().server(Sentry.sentryGlobalServerMiddlewareHandler()),
+    createMiddleware({
+      type: 'function',
+      validateClient: true,
+    }).server(Sentry.sentryGlobalServerMiddlewareHandler()),
   ],
 });

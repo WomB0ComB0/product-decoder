@@ -8,16 +8,15 @@ export const ServerRoute = createServerFileRoute("/api/auth/$").methods({
     try {
       const webRequest = getWebRequest();
       if (!webRequest) throw new Error("No web request available");
-
+    //
       const { headers } = webRequest;
-
+    //
       return Response.json({
         headers,
         status: 200,
       });
     } catch (e) {
-      // return error(e)
-      throw new Error(`${errorPredicate(e, (e) => e.message)}`);
+      throw errorPredicate(new Error(), (e) => e.message ?? String(e))
     }
   },
   OPTIONS: () => new Response("GET, POST, OPTIONS, HEAD", { status: 200 })
