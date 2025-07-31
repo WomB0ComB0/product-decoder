@@ -23,6 +23,9 @@ model User {
   twoFactorConfirmation   TwoFactorConfirmation?
   twoFactorConfirmationId String?
   profile                 Profile?
+  imageProcesses          ImageProcess[]
+  userTopResults          UserTopResult[]
+  userChoices             UserChoice[]
 
   @@map("users")
 }
@@ -130,4 +133,307 @@ model Address {
   updatedAt DateTime @updatedAt
 
   @@map("addresses")
+}
+
+// --- Product Categorization and User Management Data Model Extension ---
+
+model ImageProcess {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId()
+  userId      String      @db.ObjectId
+  imageUrl    String
+  processedAt DateTime
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topResults  TopResult[]
+
+  @@map("image_processes")
+}
+
+model TopResult {
+  id             String          @id @default(auto()) @map("_id") @db.ObjectId()
+  imageProcessId String          @db.ObjectId
+  resultData     String
+  createdAt      DateTime
+  imageProcess   ImageProcess    @relation(fields: [imageProcessId], references: [id], onDelete: Cascade)
+  metadata       Metadata[]
+  userTopResults UserTopResult[]
+  userChoices    UserChoice[]
+
+  @@map("top_results")
+}
+
+model Metadata {
+  id                String            @id @default(auto()) @map("_id") @db.ObjectId()
+  topResultId       String            @db.ObjectId
+  data              String
+  createdAt         DateTime
+  topResult         TopResult         @relation(fields: [topResultId], references: [id], onDelete: Cascade)
+  uuidRelations     UUIDRelation[]
+  productCategories ProductCategory[]
+
+  @@map("metadata")
+}
+
+model UUIDRelation {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId()
+  metadataId String   @db.ObjectId
+  foreignKey String
+  createdAt  DateTime
+  metadata   Metadata @relation(fields: [metadataId], references: [id], onDelete: Cascade)
+
+  @@map("uuid_relations")
+}
+
+model ProductCategory {
+  id                     String                 @id @default(auto()) @map("_id") @db.ObjectId()
+  metadataId             String                 @db.ObjectId
+  categoryType           String // primitive or non-primitive
+  name                   String
+  createdAt              DateTime
+  metadata               Metadata               @relation(fields: [metadataId], references: [id], onDelete: Cascade)
+  primitiveCategories    PrimitiveCategory[]
+  nonPrimitiveCategories NonPrimitiveCategory[]
+  foodPipelines          FoodPipeline[]
+  clothesPipelines       ClothesPipeline[]
+  drugsPipelines         DrugsPipeline[]
+  technologyPipelines    TechnologyPipeline[]
+
+  @@map("product_categories")
+}
+
+model PrimitiveCategory {
+  id                String          @id @default(auto()) @map("_id") @db.ObjectId()
+  productCategoryId String          @db.ObjectId
+  name              String
+  apiIntegrationId  String?         @unique @db.ObjectId
+  productCategory   ProductCategory @relation(fields: [productCategoryId], references: [id], onDelete: Cascade)
+  apiIntegration    APIIntegration? @relation(fields: [apiIntegrationId], references: [id], onDelete: NoAction)
+
+  @@map("primitive_categories")
+}
+
+model NonPrimitiveCategory {
+  id                String          @id @default(auto()) @map("_id") @db.ObjectId()
+  productCategoryId String          @db.ObjectId
+  name              String
+  apiIntegrationId  String?         @unique @db.ObjectId
+  productCategory   ProductCategory @relation(fields: [productCategoryId], references: [id], onDelete: Cascade)
+  apiIntegration    APIIntegration? @relation(fields: [apiIntegrationId], references: [id], onDelete: NoAction)
+
+  @@map("non_primitive_categories")
+}
+
+model FoodPipeline {
+  id                    String                 @id @default(auto()) @map("_id") @db.ObjectId()
+  productCategoryId     String                 @db.ObjectId
+  apiIntegrationId      String?                @unique @db.ObjectId
+  productCategory       ProductCategory        @relation(fields: [productCategoryId], references: [id], onDelete: Cascade)
+  apiIntegration        APIIntegration?        @relation(fields: [apiIntegrationId], references: [id], onDelete: NoAction)
+  searchResults         SearchResult[]
+  locationPricingLayers LocationPricingLayer[]
+  locations             Location[]
+  pricings              Pricing[]
+  foodPipelineDetails   FoodPipelineDetails?
+
+  @@map("food_pipelines")
+}
+
+model ClothesPipeline {
+  id                     String                  @id @default(auto()) @map("_id") @db.ObjectId()
+  productCategoryId      String                  @db.ObjectId
+  apiIntegrationId       String?                 @unique @db.ObjectId
+  productCategory        ProductCategory         @relation(fields: [productCategoryId], references: [id], onDelete: Cascade)
+  apiIntegration         APIIntegration?         @relation(fields: [apiIntegrationId], references: [id], onDelete: NoAction)
+  searchResults          SearchResult[]
+  locationPricingLayers  LocationPricingLayer[]
+  locations              Location[]
+  pricings               Pricing[]
+  clothesPipelineDetails ClothesPipelineDetails?
+
+  @@map("clothes_pipelines")
+}
+
+model DrugsPipeline {
+  id                    String                 @id @default(auto()) @map("_id") @db.ObjectId()
+  productCategoryId     String                 @db.ObjectId
+  apiIntegrationId      String?                @unique @db.ObjectId
+  productCategory       ProductCategory        @relation(fields: [productCategoryId], references: [id], onDelete: Cascade)
+  apiIntegration        APIIntegration?        @relation(fields: [apiIntegrationId], references: [id], onDelete: NoAction)
+  searchResults         SearchResult[]
+  locationPricingLayers LocationPricingLayer[]
+  locations             Location[]
+  pricings              Pricing[]
+  drugsPipelineDetails  DrugsPipelineDetails?
+
+  @@map("drugs_pipelines")
+}
+
+model TechnologyPipeline {
+  id                        String                     @id @default(auto()) @map("_id") @db.ObjectId()
+  productCategoryId         String                     @db.ObjectId
+  apiIntegrationId          String?                    @unique @db.ObjectId
+  productCategory           ProductCategory            @relation(fields: [productCategoryId], references: [id], onDelete: Cascade)
+  apiIntegration            APIIntegration?            @relation(fields: [apiIntegrationId], references: [id], onDelete: NoAction)
+  searchResults             SearchResult[]
+  locationPricingLayers     LocationPricingLayer[]
+  locations                 Location[]
+  pricings                  Pricing[]
+  technologyPipelineDetails TechnologyPipelineDetails?
+
+  @@map("technology_pipelines")
+}
+
+model LocationPricingLayer {
+  id                   String              @id @default(auto()) @map("_id") @db.ObjectId()
+  pipelineType         String // Could be a reference to pipeline id or type
+  createdAt            DateTime
+  foodPipelineId       String?             @db.ObjectId
+  clothesPipelineId    String?             @db.ObjectId
+  drugsPipelineId      String?             @db.ObjectId
+  technologyPipelineId String?             @db.ObjectId
+  FoodPipeline         FoodPipeline?       @relation(fields: [foodPipelineId], references: [id])
+  ClothesPipeline      ClothesPipeline?    @relation(fields: [clothesPipelineId], references: [id])
+  DrugsPipeline        DrugsPipeline?      @relation(fields: [drugsPipelineId], references: [id])
+  TechnologyPipeline   TechnologyPipeline? @relation(fields: [technologyPipelineId], references: [id])
+
+  @@map("location_pricing_layers")
+}
+
+model SearchResult {
+  id                  String               @id @default(auto()) @map("_id") @db.ObjectId()
+  pipelineId          String               @db.ObjectId
+  expandedData        String
+  createdAt           DateTime
+  expandedFKRelations ExpandedFKRelation[]
+  outputInfos         OutputInfo[]
+  foodPipeline        FoodPipeline?        @relation(fields: [pipelineId], references: [id])
+  clothesPipeline     ClothesPipeline?     @relation(fields: [pipelineId], references: [id])
+  drugsPipeline       DrugsPipeline?       @relation(fields: [pipelineId], references: [id])
+  technologyPipeline  TechnologyPipeline?  @relation(fields: [pipelineId], references: [id])
+
+  @@map("search_results")
+}
+
+model ExpandedFKRelation {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId()
+  searchResultId String       @db.ObjectId
+  foreignKey     String
+  createdAt      DateTime
+  searchResult   SearchResult @relation(fields: [searchResultId], references: [id], onDelete: Cascade)
+
+  @@map("expanded_fk_relations")
+}
+
+model OutputInfo {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId()
+  searchResultId String       @db.ObjectId
+  info           String
+  createdAt      DateTime
+  searchResult   SearchResult @relation(fields: [searchResultId], references: [id], onDelete: Cascade)
+
+  @@map("output_infos")
+}
+
+model UserChoice {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId()
+  userId      String    @db.ObjectId
+  topResultId String    @db.ObjectId
+  selectedAt  DateTime
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topResult   TopResult @relation(fields: [topResultId], references: [id], onDelete: Cascade)
+
+  @@map("user_choices")
+}
+
+model APIIntegration {
+  id                     String                @id @default(auto()) @map("_id") @db.ObjectId()
+  type                   String // Google Maps, YouTube, Custom Search, etc.
+  details                String
+  primitiveCategoryId    String?               @db.ObjectId
+  nonPrimitiveCategoryId String?               @db.ObjectId
+  primitiveCategory      PrimitiveCategory?
+  nonPrimitiveCategory   NonPrimitiveCategory?
+  FoodPipeline           FoodPipeline?
+  ClothesPipeline        ClothesPipeline?
+  DrugsPipeline          DrugsPipeline?
+  TechnologyPipeline     TechnologyPipeline?
+
+  @@map("api_integrations")
+}
+
+model Location {
+  id                 String              @id @default(auto()) @map("_id") @db.ObjectId()
+  pipelineId         String              @db.ObjectId
+  nearestLocation    String
+  createdAt          DateTime
+  foodPipeline       FoodPipeline?       @relation(fields: [pipelineId], references: [id])
+  clothesPipeline    ClothesPipeline?    @relation(fields: [pipelineId], references: [id])
+  drugsPipeline      DrugsPipeline?      @relation(fields: [pipelineId], references: [id])
+  technologyPipeline TechnologyPipeline? @relation(fields: [pipelineId], references: [id])
+
+  @@map("locations")
+}
+
+model Pricing {
+  id                 String              @id @default(auto()) @map("_id") @db.ObjectId()
+  pipelineId         String              @db.ObjectId
+  priceChangeHistory String
+  createdAt          DateTime
+  foodPipeline       FoodPipeline?       @relation(fields: [pipelineId], references: [id])
+  clothesPipeline    ClothesPipeline?    @relation(fields: [pipelineId], references: [id])
+  drugsPipeline      DrugsPipeline?      @relation(fields: [pipelineId], references: [id])
+  technologyPipeline TechnologyPipeline? @relation(fields: [pipelineId], references: [id])
+
+  @@map("pricings")
+}
+
+model UserTopResult {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId()
+  userId      String    @db.ObjectId
+  topResultId String    @db.ObjectId
+  selectedAt  DateTime
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topResult   TopResult @relation(fields: [topResultId], references: [id], onDelete: Cascade)
+
+  @@map("user_top_results")
+}
+
+model FoodPipelineDetails {
+  id                 String       @id @default(auto()) @map("_id") @db.ObjectId()
+  foodPipelineId     String       @unique @db.ObjectId
+  nearestLocation    String
+  nutrientInfo       String
+  priceChangeHistory String
+  foodPipeline       FoodPipeline @relation(fields: [foodPipelineId], references: [id], onDelete: Cascade)
+
+  @@map("food_pipeline_details")
+}
+
+model ClothesPipelineDetails {
+  id                 String          @id @default(auto()) @map("_id") @db.ObjectId()
+  clothesPipelineId  String          @unique @db.ObjectId
+  nearestLocation    String
+  productReviews     String
+  priceChangeHistory String
+  clothesPipeline    ClothesPipeline @relation(fields: [clothesPipelineId], references: [id], onDelete: Cascade)
+
+  @@map("clothes_pipeline_details")
+}
+
+model DrugsPipelineDetails {
+  id                 String        @id @default(auto()) @map("_id") @db.ObjectId()
+  drugsPipelineId    String        @unique @db.ObjectId
+  nearestLocation    String
+  priceChangeHistory String
+  drugsPipeline      DrugsPipeline @relation(fields: [drugsPipelineId], references: [id], onDelete: Cascade)
+
+  @@map("drugs_pipeline_details")
+}
+
+model TechnologyPipelineDetails {
+  id                   String             @id @default(auto()) @map("_id") @db.ObjectId()
+  technologyPipelineId String             @unique @db.ObjectId
+  designatedTask       String
+  technologyPipeline   TechnologyPipeline @relation(fields: [technologyPipelineId], references: [id], onDelete: Cascade)
+
+  @@map("technology_pipeline_details")
 }

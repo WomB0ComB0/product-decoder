@@ -1,13 +1,15 @@
 import MillionLint from "@million/lint";
-import { wrapVinxiConfigWithSentry } from "@sentry/tanstackstart-react";
 import tailwindcss from "@tailwindcss/vite";
-import type { TanStackStartInputConfig } from "@tanstack/react-start-config";
-import { defineConfig } from "@tanstack/react-start-config";
+import { defineConfig, UserConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 import tsConfigPaths from "vite-tsconfig-paths";
+import react from "@vitejs/plugin-react";
+import { sentryVitePlugin } from '@sentry/vite-plugin';
+import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 
-const config = defineConfig({
-  vite: {
+export default defineConfig(({ mode }) => {
+  const isDevelopment = mode == 'development';
+  return {
     build: {
       sourcemap: "hidden",
       chunkSizeWarningLimit: Math.pow((1024 * 2), 2), // Increased from default 500kb to 1000kb
@@ -40,6 +42,64 @@ const config = defineConfig({
         injectRegister: "auto",
         includeAssets: ["**/*"],
       }),
+      react({
+        babel: {
+          plugins: [
+            [
+              "babel-plugin-react-compiler",
+              {
+                target: "19",
+              },
+            ],
+          ],
+        },
+      }),
+      sentryVitePlugin({
+        authToken: process.env.SENTRY_AUTH_TOKEN,
+        org:
+          process.env.SENTRY_ORG ||
+          (() => {
+            throw new Error('SENTRY_ORG is not set');
+          })(),
+        project:
+          process.env.SENTRY_PROJECT ||
+          (() => {
+            throw new Error('SENTRY_PROJECT is not set');
+          })(),
+        release: {
+          // Automatically detect release name or use env override
+          name: process.env.SENTRY_RELEASE,
+          inject: true,
+          create: true,
+          finalize: true,
+        },
+        sourcemaps: {
+          // Only upload source maps from the dist directory
+          assets: 'dist/**/*.map',
+          // Ignore node_modules and test files
+          ignore: ['**/node_modules/**', '**/*.test.*', '**/*.cy.*'],
+        },
+        debug: isDevelopment,
+        telemetry: true,
+        errorHandler: (err) =>
+          Error.isError(err)
+            ? console.warn('[sentry-vite-plugin]', err)
+            : console.warn('[sentry-vite-plugin]', err),
+        bundleSizeOptimizations: {
+          excludeDebugStatements: true,
+          excludeTracing: false,
+          excludeReplayShadowDom: true,
+          excludeReplayIframe: true,
+          excludeReplayWorker: true,
+        },
+        reactComponentAnnotation: {
+          enabled: true,
+          ignoredComponents: ['Provider', 'RouterProvider'],
+        },
+      }),
+      tanstackStart({
+
+      })
     ],
     ssr: {
       external: ["@tanstack/react-query", "@tanstack/react-query-devtools"],
@@ -47,36 +107,5 @@ const config = defineConfig({
     esbuild: {
       drop: ['console', 'debugger'], // Drop console statements in production
     },
-  },
-
-  // https://react.dev/learn/react-compiler
-  react: {
-    babel: {
-      plugins: [
-        [
-          "babel-plugin-react-compiler",
-          {
-            target: "19",
-          },
-        ],
-      ],
-    },
-  },
-
-  server: {
-    /**
-     * @see https://tanstack.com/start/latest/docs/framework/react/hosting#deployment
-     *
-     * preset: "cloudflare-pages",
-     * unenv: cloudflare,
-     */
-    preset: "vercel",
-  },
-} satisfies TanStackStartInputConfig);
-
-export default wrapVinxiConfigWithSentry(config, {
-  org: process.env.SENTRY_ORG,
-  project: process.env.SENTRY_PROJECT,
-  authToken: process.env.SENTRY_AUTH_TOKEN,
-  silent: !process.env.CI,
+  } satisfies UserConfig
 });

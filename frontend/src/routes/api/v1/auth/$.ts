@@ -1,7 +1,7 @@
 import { createServerFileRoute, getWebRequest } from "@tanstack/react-start/server";
 import { auth } from "~/lib/auth";
 
-export const ServerRoute = createServerFileRoute("/api/auth/$").methods({
+export const ServerRoute = createServerFileRoute("/api/v1/auth/$").methods({
   GET: ({ request }) => auth.handler(request),
   POST: ({ request }) => auth.handler(request),
   HEAD: async () => {
