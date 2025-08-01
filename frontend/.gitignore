@@ -16,6 +16,7 @@ node_modules
 .wrangler
 .netlify
 dist
+/.million
 /build/
 /api/
 /server/build
@@ -23,3 +24,6 @@ dist
 
 .tanstack
 /generated/prisma
+
+# Sentry Config File
+.env.sentry-build-plugin

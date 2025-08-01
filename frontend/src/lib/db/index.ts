@@ -1,5 +1,5 @@
 import { serverOnly } from "@tanstack/react-start";
-import { logger } from "~/lib/utils/logger";
+import { Logger } from "@product-decoder/shared";
 import { PrismaClient } from '@prisma/client';
 import type { Prisma } from '@prisma/client';
 import { withAccelerate } from '@prisma/extension-accelerate';

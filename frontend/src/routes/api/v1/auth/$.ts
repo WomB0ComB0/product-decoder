@@ -15,8 +15,8 @@ export const ServerRoute = createServerFileRoute("/api/v1/auth/$").methods({
         headers,
         status: 200,
       });
-    } catch (e) {
-      throw errorPredicate(new Error(), (e) => e.message ?? String(e))
+    } catch (error) {
+      throw errorPredicate(new Error(), (e) => e.message ?? String(error))
     }
   },
   OPTIONS: () => new Response("GET, POST, OPTIONS, HEAD", { status: 200 })

@@ -1,0 +1,471 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table users {
+  id String [pk]
+  name String
+  email String [unique]
+  emailVerified Boolean
+  emailVerificationToken String [unique]
+  image String
+  password String
+  role Role [not null, default: 'MEMBER']
+  accounts accounts [not null]
+  sessions sessions [not null]
+  isTwoFactorEnabled Boolean [not null, default: false]
+  twoFactorConfirmation two_factor_confirmations
+  twoFactorConfirmationId String
+  profile profiles
+  imageProcesses image_processes [not null]
+  userTopResults user_top_results [not null]
+  userChoices user_choices [not null]
+}
+
+Table accounts {
+  id String [pk]
+  userId String [not null]
+  type String [not null]
+  provider String [not null]
+  providerAccountId String [not null]
+  refresh_token String
+  access_token String
+  expires_at Int
+  token_type String
+  scope String
+  id_token String
+  session_state String
+  user users [not null]
+
+  indexes {
+    (provider, providerAccountId) [unique]
+  }
+}
+
+Table sessions {
+  id String [pk]
+  sessionToken String [unique, not null]
+  userId String [not null]
+  expires DateTime [not null]
+  user users [not null]
+}
+
+Table verification_tokens {
+  id String [pk]
+  email String [not null]
+  token String [unique, not null]
+  expires DateTime [not null]
+
+  indexes {
+    (email, token) [unique]
+  }
+}
+
+Table password_reset_tokens {
+  id String [pk]
+  email String [not null]
+  token String [unique, not null]
+  expires DateTime [not null]
+
+  indexes {
+    (email, token) [unique]
+  }
+}
+
+Table two_factor_tokens {
+  id String [pk]
+  email String [not null]
+  token String [unique, not null]
+  expires DateTime [not null]
+
+  indexes {
+    (email, token) [unique]
+  }
+}
+
+Table two_factor_confirmations {
+  id String [pk]
+  userId String [unique, not null]
+  user users [not null]
+}
+
+Table profiles {
+  id String [pk]
+  userId String [unique, not null]
+  user users [not null]
+  role Role [not null, default: 'MEMBER']
+  active Boolean [not null, default: true]
+  version String
+  photoUrl String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  address addresses
+}
+
+Table addresses {
+  id String [pk]
+  profileId String [unique, not null]
+  profile profiles [not null]
+  line1 String [not null]
+  line2 String
+  city String [not null]
+  province String [not null]
+  country String [not null]
+  zip String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table image_processes {
+  id String [pk]
+  userId String [not null]
+  imageUrl String [not null]
+  processedAt DateTime [not null]
+  user users [not null]
+  topResults top_results [not null]
+}
+
+Table top_results {
+  id String [pk]
+  imageProcessId String [not null]
+  resultData String [not null]
+  createdAt DateTime [not null]
+  imageProcess image_processes [not null]
+  metadata metadata [not null]
+  userTopResults user_top_results [not null]
+  userChoices user_choices [not null]
+}
+
+Table metadata {
+  id String [pk]
+  topResultId String [not null]
+  data String [not null]
+  createdAt DateTime [not null]
+  topResult top_results [not null]
+  uuidRelations uuid_relations [not null]
+  productCategories product_categories [not null]
+}
+
+Table uuid_relations {
+  id String [pk]
+  metadataId String [not null]
+  foreignKey String [not null]
+  createdAt DateTime [not null]
+  metadata metadata [not null]
+}
+
+Table product_categories {
+  id String [pk]
+  metadataId String [not null]
+  categoryType String [not null]
+  name String [not null]
+  createdAt DateTime [not null]
+  metadata metadata [not null]
+  primitiveCategories primitive_categories [not null]
+  nonPrimitiveCategories non_primitive_categories [not null]
+  foodPipelines food_pipelines [not null]
+  clothesPipelines clothes_pipelines [not null]
+  drugsPipelines drugs_pipelines [not null]
+  technologyPipelines technology_pipelines [not null]
+}
+
+Table primitive_categories {
+  id String [pk]
+  productCategoryId String [not null]
+  name String [not null]
+  apiIntegrationId String [unique]
+  productCategory product_categories [not null]
+  apiIntegration api_integrations
+}
+
+Table non_primitive_categories {
+  id String [pk]
+  productCategoryId String [not null]
+  name String [not null]
+  apiIntegrationId String [unique]
+  productCategory product_categories [not null]
+  apiIntegration api_integrations
+}
+
+Table food_pipelines {
+  id String [pk]
+  productCategoryId String [not null]
+  apiIntegrationId String [unique]
+  productCategory product_categories [not null]
+  apiIntegration api_integrations
+  searchResults search_results [not null]
+  locationPricingLayers location_pricing_layers [not null]
+  locations locations [not null]
+  pricings pricings [not null]
+  foodPipelineDetails food_pipeline_details
+}
+
+Table clothes_pipelines {
+  id String [pk]
+  productCategoryId String [not null]
+  apiIntegrationId String [unique]
+  productCategory product_categories [not null]
+  apiIntegration api_integrations
+  searchResults search_results [not null]
+  locationPricingLayers location_pricing_layers [not null]
+  locations locations [not null]
+  pricings pricings [not null]
+  clothesPipelineDetails clothes_pipeline_details
+}
+
+Table drugs_pipelines {
+  id String [pk]
+  productCategoryId String [not null]
+  apiIntegrationId String [unique]
+  productCategory product_categories [not null]
+  apiIntegration api_integrations
+  searchResults search_results [not null]
+  locationPricingLayers location_pricing_layers [not null]
+  locations locations [not null]
+  pricings pricings [not null]
+  drugsPipelineDetails drugs_pipeline_details
+}
+
+Table technology_pipelines {
+  id String [pk]
+  productCategoryId String [not null]
+  apiIntegrationId String [unique]
+  productCategory product_categories [not null]
+  apiIntegration api_integrations
+  searchResults search_results [not null]
+  locationPricingLayers location_pricing_layers [not null]
+  locations locations [not null]
+  pricings pricings [not null]
+  technologyPipelineDetails technology_pipeline_details
+}
+
+Table location_pricing_layers {
+  id String [pk]
+  pipelineType String [not null]
+  createdAt DateTime [not null]
+  foodPipelineId String
+  clothesPipelineId String
+  drugsPipelineId String
+  technologyPipelineId String
+  FoodPipeline food_pipelines
+  ClothesPipeline clothes_pipelines
+  DrugsPipeline drugs_pipelines
+  TechnologyPipeline technology_pipelines
+}
+
+Table search_results {
+  id String [pk]
+  pipelineId String [not null]
+  expandedData String [not null]
+  createdAt DateTime [not null]
+  expandedFKRelations expanded_fk_relations [not null]
+  outputInfos output_infos [not null]
+  foodPipeline food_pipelines
+  clothesPipeline clothes_pipelines
+  drugsPipeline drugs_pipelines
+  technologyPipeline technology_pipelines
+}
+
+Table expanded_fk_relations {
+  id String [pk]
+  searchResultId String [not null]
+  foreignKey String [not null]
+  createdAt DateTime [not null]
+  searchResult search_results [not null]
+}
+
+Table output_infos {
+  id String [pk]
+  searchResultId String [not null]
+  info String [not null]
+  createdAt DateTime [not null]
+  searchResult search_results [not null]
+}
+
+Table user_choices {
+  id String [pk]
+  userId String [not null]
+  topResultId String [not null]
+  selectedAt DateTime [not null]
+  user users [not null]
+  topResult top_results [not null]
+}
+
+Table api_integrations {
+  id String [pk]
+  type String [not null]
+  details String [not null]
+  primitiveCategoryId String
+  nonPrimitiveCategoryId String
+  primitiveCategory primitive_categories
+  nonPrimitiveCategory non_primitive_categories
+  FoodPipeline food_pipelines
+  ClothesPipeline clothes_pipelines
+  DrugsPipeline drugs_pipelines
+  TechnologyPipeline technology_pipelines
+}
+
+Table locations {
+  id String [pk]
+  pipelineId String [not null]
+  nearestLocation String [not null]
+  createdAt DateTime [not null]
+  foodPipeline food_pipelines
+  clothesPipeline clothes_pipelines
+  drugsPipeline drugs_pipelines
+  technologyPipeline technology_pipelines
+}
+
+Table pricings {
+  id String [pk]
+  pipelineId String [not null]
+  priceChangeHistory String [not null]
+  createdAt DateTime [not null]
+  foodPipeline food_pipelines
+  clothesPipeline clothes_pipelines
+  drugsPipeline drugs_pipelines
+  technologyPipeline technology_pipelines
+}
+
+Table user_top_results {
+  id String [pk]
+  userId String [not null]
+  topResultId String [not null]
+  selectedAt DateTime [not null]
+  user users [not null]
+  topResult top_results [not null]
+}
+
+Table food_pipeline_details {
+  id String [pk]
+  foodPipelineId String [unique, not null]
+  nearestLocation String [not null]
+  nutrientInfo String [not null]
+  priceChangeHistory String [not null]
+  foodPipeline food_pipelines [not null]
+}
+
+Table clothes_pipeline_details {
+  id String [pk]
+  clothesPipelineId String [unique, not null]
+  nearestLocation String [not null]
+  productReviews String [not null]
+  priceChangeHistory String [not null]
+  clothesPipeline clothes_pipelines [not null]
+}
+
+Table drugs_pipeline_details {
+  id String [pk]
+  drugsPipelineId String [unique, not null]
+  nearestLocation String [not null]
+  priceChangeHistory String [not null]
+  drugsPipeline drugs_pipelines [not null]
+}
+
+Table technology_pipeline_details {
+  id String [pk]
+  technologyPipelineId String [unique, not null]
+  designatedTask String [not null]
+  technologyPipeline technology_pipelines [not null]
+}
+
+Enum Role {
+  GUEST
+  MEMBER
+}
+
+Ref: accounts.userId > users.id [delete: Cascade]
+
+Ref: sessions.userId > users.id [delete: Cascade]
+
+Ref: two_factor_confirmations.userId - users.id [delete: Cascade]
+
+Ref: profiles.userId - users.id [delete: Cascade]
+
+Ref: addresses.profileId - profiles.id [delete: Cascade]
+
+Ref: image_processes.userId > users.id [delete: Cascade]
+
+Ref: top_results.imageProcessId > image_processes.id [delete: Cascade]
+
+Ref: metadata.topResultId > top_results.id [delete: Cascade]
+
+Ref: uuid_relations.metadataId > metadata.id [delete: Cascade]
+
+Ref: product_categories.metadataId > metadata.id [delete: Cascade]
+
+Ref: primitive_categories.productCategoryId > product_categories.id [delete: Cascade]
+
+Ref: primitive_categories.apiIntegrationId - api_integrations.id [delete: No Action]
+
+Ref: non_primitive_categories.productCategoryId > product_categories.id [delete: Cascade]
+
+Ref: non_primitive_categories.apiIntegrationId - api_integrations.id [delete: No Action]
+
+Ref: food_pipelines.productCategoryId > product_categories.id [delete: Cascade]
+
+Ref: food_pipelines.apiIntegrationId - api_integrations.id [delete: No Action]
+
+Ref: clothes_pipelines.productCategoryId > product_categories.id [delete: Cascade]
+
+Ref: clothes_pipelines.apiIntegrationId - api_integrations.id [delete: No Action]
+
+Ref: drugs_pipelines.productCategoryId > product_categories.id [delete: Cascade]
+
+Ref: drugs_pipelines.apiIntegrationId - api_integrations.id [delete: No Action]
+
+Ref: technology_pipelines.productCategoryId > product_categories.id [delete: Cascade]
+
+Ref: technology_pipelines.apiIntegrationId - api_integrations.id [delete: No Action]
+
+Ref: location_pricing_layers.foodPipelineId > food_pipelines.id
+
+Ref: location_pricing_layers.clothesPipelineId > clothes_pipelines.id
+
+Ref: location_pricing_layers.drugsPipelineId > drugs_pipelines.id
+
+Ref: location_pricing_layers.technologyPipelineId > technology_pipelines.id
+
+Ref: search_results.pipelineId > food_pipelines.id
+
+Ref: search_results.pipelineId > clothes_pipelines.id
+
+Ref: search_results.pipelineId > drugs_pipelines.id
+
+Ref: search_results.pipelineId > technology_pipelines.id
+
+Ref: expanded_fk_relations.searchResultId > search_results.id [delete: Cascade]
+
+Ref: output_infos.searchResultId > search_results.id [delete: Cascade]
+
+Ref: user_choices.userId > users.id [delete: Cascade]
+
+Ref: user_choices.topResultId > top_results.id [delete: Cascade]
+
+Ref: locations.pipelineId > food_pipelines.id
+
+Ref: locations.pipelineId > clothes_pipelines.id
+
+Ref: locations.pipelineId > drugs_pipelines.id
+
+Ref: locations.pipelineId > technology_pipelines.id
+
+Ref: pricings.pipelineId > food_pipelines.id
+
+Ref: pricings.pipelineId > clothes_pipelines.id
+
+Ref: pricings.pipelineId > drugs_pipelines.id
+
+Ref: pricings.pipelineId > technology_pipelines.id
+
+Ref: user_top_results.userId > users.id [delete: Cascade]
+
+Ref: user_top_results.topResultId > top_results.id [delete: Cascade]
+
+Ref: food_pipeline_details.foodPipelineId - food_pipelines.id [delete: Cascade]
+
+Ref: clothes_pipeline_details.clothesPipelineId - clothes_pipelines.id [delete: Cascade]
+
+Ref: drugs_pipeline_details.drugsPipelineId - drugs_pipelines.id [delete: Cascade]
+
+Ref: technology_pipeline_details.technologyPipelineId - technology_pipelines.id [delete: Cascade]
