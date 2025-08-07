@@ -1,10 +1,13 @@
 {
   "name": "product-decoder",
-  "module": "index.ts",
   "type": "module",
   "private": true,
   "scripts": {
-    "start": "concurrently --kill-others-on-fail \"cd backend && bun install --frozen-lockfile && bun run dev\" \"cd frontend && bun run dev\""
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "types": "turbo run check"
   },
   "devDependencies": {
     "@types/bun": "latest"
@@ -15,5 +18,13 @@
   "dependencies": {
     "concurrently": "^9.2.0",
     "turbo": "^2.5.5"
-  }
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "packageManager": "bun@1.2.19",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
 }

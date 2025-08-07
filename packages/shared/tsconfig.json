@@ -1,0 +1,9 @@
+{
+  "extends": "@packages/config-typescript/react-library.json",
+  "compilerOptions": {
+    "lib": ["dom", "ES2015"],
+    "types": ["vitest", "node"]
+  },
+  "include": ["."],
+  "exclude": ["dist", "build", "node_modules"]
+}
