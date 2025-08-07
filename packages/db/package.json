@@ -3,8 +3,9 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "db:gen": "bun run --watch database.gen.ts",
-    "db:seed": "bun run --watch src/seed.ts"
+    "db:gen": "bun ./src/database.gen.ts",
+    "db:seed": "bun ./src/seed.ts",
+    "build": "bun run db:gen && bun run check && bun run lint && bun run format && turbo build src/index.ts --outdir=build --target=bun --minify"
   },
   "devDependencies": {
     "@types/bun": "latest"
