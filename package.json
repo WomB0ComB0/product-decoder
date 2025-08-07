@@ -7,7 +7,12 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "types": "turbo run check"
+    "types": "turbo run check",
+    "gen:copy": "bun ./bin/gen/copyright.gen.ts",
+    "gen:docs": "bun ./bin/gen/jsdoc.gen.ts",
+    "light": "",
+    "pkg:costs": "",
+    ""
   },
   "devDependencies": {
     "@types/bun": "latest"
