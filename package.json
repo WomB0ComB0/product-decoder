@@ -11,8 +11,7 @@
     "gen:copy": "bun ./bin/gen/copyright.gen.ts",
     "gen:docs": "bun ./bin/gen/jsdoc.gen.ts",
     "light": "",
-    "pkg:costs": "",
-    ""
+    "pkg:costs": ""
   },
   "devDependencies": {
     "@types/bun": "latest"
