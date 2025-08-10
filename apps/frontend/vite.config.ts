@@ -1,10 +1,10 @@
 import MillionLint from "@million/lint";
+import { sentryVitePlugin } from '@sentry/vite-plugin';
 import tailwindcss from "@tailwindcss/vite";
+import react from "@vitejs/plugin-react";
 import { defineConfig, UserConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 import tsConfigPaths from "vite-tsconfig-paths";
-import react from "@vitejs/plugin-react";
-import { sentryVitePlugin } from '@sentry/vite-plugin';
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 
 export default defineConfig(({ mode }) => {

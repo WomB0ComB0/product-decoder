@@ -6,3 +6,5 @@ export { PrismaClient } from '@prisma/client';
 export type { Prisma } from '@prisma/client';
 export { withAccelerate } from '@prisma/extension-accelerate';
 
+// Re-export generated Zod schemas
+export * from './generated/schemas';

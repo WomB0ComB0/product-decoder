@@ -1,6 +1,12 @@
 generator client {
   provider = "prisma-client-js"
 }
+
+generator zod {
+  provider = "prisma-zod-generator"
+  output   = "../src/generated"
+}
+
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")

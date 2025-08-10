@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { Console } from 'effect';
-
 /**
  * @fileoverview A comprehensive logging utility for both client and server environments.
  * Provides structured logging with support for different log levels, colorization,
@@ -309,7 +307,7 @@ export class Logger {
   info(message: string, data?: LogData): void {
     if (!this.shouldLog(LogLevel.INFO)) return;
     const formattedData = this.formatMessage('info', message, data);
-    Console.log(
+    console.log(
       this.colorize(this.levelColors.info, this.formatLogLevel('info')) +
         ' ' +
         this.formatOutput(formattedData),
@@ -335,7 +333,7 @@ export class Logger {
       error: errorData,
     });
 
-    Console.error(
+    console.error(
       this.colorize('bold', this.colorize(this.levelColors.error, this.formatLogLevel('error'))) +
         ' ' +
         this.formatOutput(formattedData),
@@ -351,7 +349,7 @@ export class Logger {
   warn(message: string, data?: LogData): void {
     if (!this.shouldLog(LogLevel.WARN)) return;
     const formattedData = this.formatMessage('warn', message, data);
-    Console.warn(
+    console.warn(
       this.colorize(this.levelColors.warn, this.formatLogLevel('warn')) +
         ' ' +
         this.formatOutput(formattedData),
@@ -367,7 +365,7 @@ export class Logger {
   debug(message: string, data?: LogData): void {
     if (!this.shouldLog(LogLevel.DEBUG)) return;
     const formattedData = this.formatMessage('debug', message, data);
-    Console.debug(
+    console.debug(
       this.colorize(this.levelColors.debug, this.formatLogLevel('debug')) +
         ' ' +
         this.formatOutput(formattedData),
@@ -383,7 +381,7 @@ export class Logger {
   trace(message: string, data?: LogData): void {
     if (!this.shouldLog(LogLevel.TRACE)) return;
     const formattedData = this.formatMessage('trace', message, data);
-    Console.debug(
+    console.debug(
       this.colorize(this.levelColors.trace, this.formatLogLevel('trace')) +
         ' ' +
         this.formatOutput(formattedData),
@@ -399,7 +397,7 @@ export class Logger {
   action(message: string, data?: LogData): void {
     if (!this.shouldLog(LogLevel.INFO)) return;
     const formattedData = this.formatMessage('action', message, data);
-    Console.log(
+    console.log(
       this.colorize(this.levelColors.action, this.formatLogLevel('action')) +
         ' ' +
         this.formatOutput(formattedData),
@@ -415,7 +413,7 @@ export class Logger {
   success(message: string, data?: LogData): void {
     if (!this.shouldLog(LogLevel.INFO)) return;
     const formattedData = this.formatMessage('success', message, data);
-    Console.log(
+    console.log(
       this.colorize(this.levelColors.success, this.formatLogLevel('success')) +
         ' ' +
         this.formatOutput(formattedData),
@@ -429,7 +427,7 @@ export class Logger {
    */
   group(label: string): void {
     if (!this.shouldLog(LogLevel.INFO)) return;
-    Console.group({ label: this.colorize('bold', label) });
+    console.group({ label: this.colorize('bold', label) });
   }
 
   /**

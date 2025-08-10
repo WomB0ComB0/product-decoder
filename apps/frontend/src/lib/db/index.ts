@@ -14,16 +14,16 @@ const options: Record<string, Prisma.PrismaClientOptions> = {
       { emit: 'event', level: 'warn' },
     ] as const,
     transactionOptions: {
-      maxWait: 10000,
-      timeout: 10000,
+      maxWait: 10_000,
+      timeout: 10_000,
     },
   },
   production: {
     errorFormat: 'minimal' as const,
     log: [{ emit: 'event', level: 'error' }] as const,
     transactionOptions: {
-      maxWait: 10000,
-      timeout: 10000,
+      maxWait: 10_000,
+      timeout: 10_000,
     },
   },
   test: {
@@ -34,8 +34,8 @@ const options: Record<string, Prisma.PrismaClientOptions> = {
       { emit: 'event', level: 'warn' },
     ] as const,
     transactionOptions: {
-      maxWait: 10000,
-      timeout: 10000,
+      maxWait: 10_000,
+      timeout: 10_000,
     },
   },
 };
