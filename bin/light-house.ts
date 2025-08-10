@@ -18,7 +18,7 @@ export default (async () => {
       [
         'unlighthouse',
         '--site',
-        `${(await import('@pa')).app.url}`,
+        `${(await import('../packages/shared/src/constants')).app.url}`,
         '--debug',
         '--no-cache',
         '--throttle',

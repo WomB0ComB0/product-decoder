@@ -749,7 +749,7 @@ FALLBACK EXCLUSIONS (when not using Git):
  * @see {@link JSDocGenerator}
  */
 async function main() {
-  const args = process.argv.slice(2);
+  const args = Bun.argv as [string, ...string[]];
 
   if (args.includes('--help') || args.includes('-h')) {
     await showHelp();
@@ -777,7 +777,10 @@ async function main() {
   let targetDirectory: string | null = null;
 
   if (concurrencyIndex !== -1 && concurrencyIndex < args.length - 1) {
-    maxConcurrency = Number.parseInt(args[concurrencyIndex + 1], 10);
+    maxConcurrency = Number.parseInt(
+      args[concurrencyIndex + 1] ?? '3',
+      10
+    );
     if (isNaN(maxConcurrency) || maxConcurrency < 1) {
       console.error('❌ Invalid concurrency value. Must be a positive integer.');
       process.exit(1);
@@ -785,7 +788,10 @@ async function main() {
   }
 
   if (retryIndex !== -1 && retryIndex < args.length - 1) {
-    retryAttempts = Number.parseInt(args[retryIndex + 1], 10);
+    retryAttempts = Number.parseInt(
+      args[retryIndex + 1] ?? '2', 
+      10
+    );
     if (isNaN(retryAttempts) || retryAttempts < 0) {
       console.error('❌ Invalid retry attempts value. Must be a non-negative integer.');
       process.exit(1);
@@ -793,14 +799,14 @@ async function main() {
   }
 
   if (dirIndex !== -1 && dirIndex < args.length - 1) {
-    targetDirectory = args[dirIndex + 1];
+    targetDirectory = args[dirIndex + 1] ?? null;
   }
 
   // Collect exclude patterns
   const excludePatterns: string[] = [];
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--exclude' && i < args.length - 1) {
-      excludePatterns.push(args[i + 1]);
+      excludePatterns.push(args[i + 1] ?? '');
     }
   }
 
@@ -817,7 +823,7 @@ async function main() {
   const files = [];
 
   for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
+    const arg = args[i] ?? '';
 
     if (flagsToSkip.has(arg)) {
       // Skip the flag

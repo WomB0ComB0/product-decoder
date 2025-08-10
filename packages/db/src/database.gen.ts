@@ -13,14 +13,14 @@ const retry = async (fn: () => Promise<any>, retries = 3, delay = 1000) => {
   }
 };
 
-(async () => {
-  const isDev = process.env.NODE_ENV !== 'production';
+if (import.meta.main) {
+  const isDev = Bun.env.NODE_ENV !== 'production';
 
   try {
-    logger.info('Starting database setup...', { env: process.env.NODE_ENV });
+    logger.info('Starting database setup...', { env: Bun.env.NODE_ENV });
 
     // Validate DATABASE_URL first
-    const databaseUrl = process.env.DATABASE_URL;
+    const databaseUrl = Bun.env.DATABASE_URL;
     if (!databaseUrl) {
       throw new Error('DATABASE_URL environment variable is not set');
     }
@@ -124,4 +124,4 @@ const retry = async (fn: () => Promise<any>, retries = 3, delay = 1000) => {
     }
     process.exit(1);
   }
-})();
+}
