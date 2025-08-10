@@ -1,10 +1,4 @@
-'use server';
-
-import { exec } from 'node:child_process';
-import { promisify } from 'node:util';
-import { logger } from "@packages/logger";
-
-const execPromise = promisify(exec);
+import { logger } from '@packages/logger';
 
 const retry = async (fn: () => Promise<any>, retries = 3, delay = 1000) => {
   try {
@@ -34,12 +28,22 @@ const retry = async (fn: () => Promise<any>, retries = 3, delay = 1000) => {
     // Check if DATABASE_URL includes database name for MongoDB
     if (databaseUrl.includes('mongodb') && !databaseUrl.includes('mongodb.net/')) {
       logger.warn('MongoDB connection string should include database name');
-      logger.info('Example: mongodb+srv://user:pass@cluster.mongodb.net/your-database-name?retryWrites=true&w=majority');
+      logger.info(
+        'Example: mongodb+srv://user:pass@cluster.mongodb.net/your-database-name?retryWrites=true&w=majority',
+      );
     }
 
     logger.info('Generating Prisma client...');
     const { stdout: generateOutput, stderr: generateError } = await retry(() =>
-      execPromise('bunx prisma generate --schema=./prisma/schema.prisma'),
+      Bun.spawn(['bunx', 'prisma', 'generate', '--schema=./prisma/schema.prisma'], {
+        stdout: 'pipe',
+        stderr: 'pipe',
+      }).exited.then(async (exitCode) => {
+        if (exitCode !== 0) {
+          throw new Error(`Prisma generate failed with exit code ${exitCode}`);
+        }
+        return { stdout: '', stderr: '' };
+      }),
     );
 
     if (generateError) {
@@ -52,7 +56,15 @@ const retry = async (fn: () => Promise<any>, retries = 3, delay = 1000) => {
       logger.info('Pushing schema changes to MongoDB (development only)...');
       try {
         const { stdout: pushOutput, stderr: pushError } = await retry(() =>
-          execPromise('bunx prisma db push --schema=./prisma/schema.prisma'),
+          Bun.spawn(['bunx', 'prisma', 'db', 'push', '--schema=./prisma/schema.prisma'], {
+            stdout: 'pipe',
+            stderr: 'pipe',
+          }).exited.then(async (exitCode) => {
+            if (exitCode !== 0) {
+              throw new Error(`Schema push failed with exit code ${exitCode}`);
+            }
+            return { stdout: '', stderr: '' };
+          }),
         );
         if (pushError) {
           logger.warn('Schema push produced warnings:', { error: pushError });
@@ -64,7 +76,9 @@ const retry = async (fn: () => Promise<any>, retries = 3, delay = 1000) => {
       }
     } else {
       logger.info('Production environment - skipping schema push');
-      logger.info('Note: For MongoDB production deployments, ensure your database schema is properly set up');
+      logger.info(
+        'Note: For MongoDB production deployments, ensure your database schema is properly set up',
+      );
     }
 
     // Skip migration deploy for MongoDB as it's not supported
@@ -74,7 +88,15 @@ const retry = async (fn: () => Promise<any>, retries = 3, delay = 1000) => {
     try {
       logger.info('Attempting to seed database...');
       const { stdout: seedOutput, stderr: seedError } = await retry(() =>
-        execPromise('bunx prisma db seed --schema=./prisma/schema.prisma'),
+        Bun.spawn(['bunx', 'prisma', 'db', 'seed', '--schema=./prisma/schema.prisma'], {
+          stdout: 'pipe',
+          stderr: 'pipe',
+        }).exited.then(async (exitCode) => {
+          if (exitCode !== 0) {
+            throw new Error(`Database seeding failed with exit code ${exitCode}`);
+          }
+          return { stdout: '', stderr: '' };
+        }),
       );
 
       if (seedError) {
@@ -97,7 +119,7 @@ const retry = async (fn: () => Promise<any>, retries = 3, delay = 1000) => {
           stack: error.stack,
           // @ts-ignore
           code: error.code,
-        }
+        },
       });
     }
     process.exit(1);

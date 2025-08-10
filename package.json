@@ -7,7 +7,14 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "types": "turbo run check"
+    "types": "turbo run check",
+    "gen:copy": "bun ./bin/gen/copyright.gen.ts",
+    "gen:docs": "bun ./bin/gen/jsdoc.gen.ts",
+    "lighthouse": "bun ./bin/light-house.ts",
+    "pkg:costs": "bun ./bin/package-cost.ts",
+    "rm:dupes": "bun ./bin/remove-duplicate-packages.ts",
+    "ts:shake": "bun ./bin/unused-tree-shake.ts",
+    "update:sec": "bun ./bin/update-security-md.js"
   },
   "devDependencies": {
     "@types/bun": "latest"

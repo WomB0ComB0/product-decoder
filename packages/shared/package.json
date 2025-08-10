@@ -14,11 +14,14 @@
     "clean": "rm -rf dist",
     "dev": "tsup --watch && tsc -p tsconfig-build.json -w",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src/",
-    "lint:fix": "eslint src/ --fix",
+    "lint": "bunx biome lint .",
+    "lint:fix": "bunx biome check --apply .",
+    "format": "bunx biome format --write .",
+    "check": "bunx biome check .",
     "test": "vitest run --coverage"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.0.6",
     "@packages/config-typescript": "workspace:*",
     "@testing-library/react": "^16.3.0",
     "@types/node": "^24.2.0",

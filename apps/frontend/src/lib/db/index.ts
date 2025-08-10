@@ -1,10 +1,9 @@
+import type { Prisma } from '@packages/db';
+import { PrismaClient, withAccelerate } from '@packages/db';
+import { Logger } from "@packages/logger";
 import { serverOnly } from "@tanstack/react-start";
-import { logger } from "@product-decoder/shared";
-import { PrismaClient } from '@prisma/client';
-import type { Prisma } from '@prisma/client';
-import { withAccelerate } from '@prisma/extension-accelerate';
 
-const log = logger.getSubLogger({ prefix: ['Prisma'] });
+const log = Logger.getLogger('Prisma');
 
 const options: Record<string, Prisma.PrismaClientOptions> = {
   development: {

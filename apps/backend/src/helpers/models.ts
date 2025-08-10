@@ -5,8 +5,6 @@ import type {
 	PrismaClientUnknownRequestError,
 	PrismaClientValidationError,
 } from "@prisma/client/runtime/library";
-import * as models from "@product-decoder/db";
-
 import { type TSchema, t } from "elysia";
 import type {
 	InternalServerError,

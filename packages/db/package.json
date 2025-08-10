@@ -2,10 +2,21 @@
   "name": "@packages/db",
   "type": "module",
   "private": true,
+  "main": "./build/index.js",
+  "module": "./build/index.js",
+  "exports": {
+    ".": {
+      "import": "./build/index.js"
+    },
+    "./src/*": {
+      "import": "./src/*"
+    }
+  },
   "scripts": {
     "db:gen": "bun ./src/database.gen.ts",
     "db:seed": "bun ./src/seed.ts",
-    "build": "bun run db:gen && bun run check && bun run lint && bun run format && turbo build src/index.ts --outdir=build --target=bun --minify"
+    "lint": "bunx biome format --write .",
+    "build": "bun run db:gen && bun run lint && bun build src/index.ts --outdir=build --target=bun --minify"
   },
   "devDependencies": {
     "@types/bun": "latest"
@@ -15,11 +26,12 @@
   },
   "dependencies": {
     "@packages/logger": "workspace:*",
-    "@prisma/client": "^6.13.0",
+    "@prisma/client": "6.13.0",
     "@prisma/extension-accelerate": "^2.0.2",
     "@types/bcrypt": "^6.0.0",
     "bcrypt": "^6.0.0",
     "bson": "^6.10.4",
+    "prisma": "6.13.0",
     "prisma-dbml-generator": "^0.12.0"
   }
 }

@@ -7,7 +7,7 @@ import {
   useRouter,
 } from "@tanstack/react-router";
 import { Button } from "./ui/button";
-import { Logger, LogLevel } from "~/lib/utils";
+import { Logger, LogLevel } from "@packages/logger";
 import * as Sentry from "@sentry/tanstackstart-react";
 
 const logger = new Logger("DefaultCatchBoundary", {
