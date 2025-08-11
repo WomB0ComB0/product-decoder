@@ -1,6 +1,6 @@
 import { logger } from '@packages/logger';
 
-const retry = async (fn: () => Promise<any>, retries = 3, delay = 1000) => {
+const retry = async (fn: () => Promise<any>, retries = 3, delay = 1_000) => {
   try {
     return await fn();
   } catch (error) {
