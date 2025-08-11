@@ -15,7 +15,54 @@ export default defineConfig(({ mode }) => {
       chunkSizeWarningLimit: Math.pow((1024 * 2), 2), // Increased from default 500kb to 1000kb
       rollupOptions: {
         maxParallelFileOps: 20, // Reduced from 300 to 20
+        external: [
+          // Externalize Node.js-only dependencies
+          'mock-aws-s3',
+          'aws-sdk',
+          'nock',
+          '@mapbox/node-pre-gyp',
+          // Externalize problematic ESM packages
+          'unicorn-magic',
+          'globby',
+          'nitropack',
+          '@tanstack/react-start-config',
+          '@tanstack/react-start-plugin',
+          '@tanstack/router-generator'
+        ],
       },
+    },
+    optimizeDeps: {
+      exclude: [
+        // Exclude problematic dependencies from pre-bundling
+        'lightningcss',
+        '@mapbox/node-pre-gyp',
+        'mock-aws-s3',
+        'aws-sdk',
+        'nock',
+        // Exclude TanStack packages that have ESM issues
+        '@tanstack/react-start-config',
+        '@tanstack/react-start-plugin',
+        '@tanstack/router-generator',
+        // Exclude globby and nitropack completely
+        'globby',
+        'nitropack',
+        // Exclude all nitropack-related packages
+        '@nitrojs/core', 
+        '@nitrojs/rollup',
+        '@nitrojs/unjs',
+        'unjs'
+      ],
+      include: [
+        // Force include common dependencies to avoid issues
+        'react',
+        'react-dom',
+        '@tanstack/react-query',
+        '@tanstack/react-router'
+      ],
+    },
+    resolve: {
+      conditions: ['import', 'module', 'browser', 'default'],
+      mainFields: ['module', 'main', 'browser']
     },
     plugins: [
       tsConfigPaths({
@@ -93,52 +140,47 @@ export default defineConfig(({ mode }) => {
         },
       }),
       tanstackStart({
-        prerender: {
-          // Enable prerendering
-          enabled: true,
+        // https://github.com/TanStack/router/discussions/2863#discussioncomment-13713677
+        customViteReactPlugin: true,
 
-          // Enable if you need pages to be at `/page/index.html` instead of `/page.html`
-          autoSubfolderIndex: true,
-
-          // How many prerender jobs to run at once
-          concurrency: 14,
-
-          // Whether to extract links from the HTML and prerender them also
-          crawlLinks: true,
-
-          // Filter function takes the page object and returns whether it should prerender
-          filter: ({ path }) => !path.startsWith('/about') || !path.startsWith('/team'),
-
-          // Number of times to retry a failed prerender job
-          retryCount: 2,
-
-          // Delay between retries in milliseconds
-          retryDelay: 1000,
-
-          // Callback when page is successfully rendered
-          onSuccess: ({ page }) => {
-            console.log(`Rendered ${page.path}`)
-          }
+        tsr: {
+          quoteStyle: "double",
+          semicolons: true,
         },
-        // Optional configuration for specific pages (without this it will still automatically
-        // prerender all routes)
-        pages: [
-          {
-            path: '/events',
-            prerender: { enabled: true, outputPath: '/events/index.html' }
-          },
-          {
-            path: '/projects',
-            prerender: { enabled: true, outputPath: '/projects/index.html' }
-          }
-        ]
-      })
+
+        // https://tanstack.com/start/latest/docs/framework/react/hosting#deployment
+        // target: "node-server",
+      }),
     ],
     ssr: {
-      external: ["@tanstack/react-query", "@tanstack/react-query-devtools"],
+      external: [
+        "@tanstack/react-query",
+        "@tanstack/react-query-devtools",
+        // Add Node.js-only dependencies to SSR external
+        'lightningcss',
+        '@mapbox/node-pre-gyp',
+        'mock-aws-s3',
+        'aws-sdk',
+        'nock',
+        // Add globby and nitropack to SSR externals
+        'globby',
+        'nitropack',
+        '@nitrojs/core',
+        '@nitrojs/rollup',
+        '@nitrojs/unjs',
+        'unjs'
+      ],
+      noExternal: [
+        // Force bundle client-side dependencies
+        /^(?!node:)/,
+      ],
     },
     esbuild: {
       drop: ['console', 'debugger'], // Drop console statements in production
+    },
+    define: {
+      // Define globals to avoid runtime errors
+      global: 'globalThis',
     },
   } satisfies UserConfig
 });

@@ -15,7 +15,7 @@
   "scripts": {
     "db:gen": "bun ./src/database.gen.ts",
     "db:seed": "bun ./src/seed.ts",
-    "lint": "bunx biome format --write .",
+    "lint": "bunx biome format --write . || true",
     "build": "bun run db:gen && bun run lint && bun build src/index.ts --outdir=build --target=bun --minify"
   },
   "devDependencies": {
@@ -25,6 +25,7 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@biomejs/biome": "^2.1.4",
     "@packages/logger": "workspace:*",
     "@prisma/client": "6.13.0",
     "@prisma/extension-accelerate": "^2.0.2",

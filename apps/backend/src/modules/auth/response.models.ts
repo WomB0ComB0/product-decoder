@@ -1,12 +1,12 @@
-import { t } from "elysia";
-import { ResponseBaseModel } from "#helpers/models";
+import { t } from 'elysia';
+import { ResponseBaseModel } from '#helpers/models';
 
 const ResponseLoginModel = t.Object({
-	...ResponseBaseModel.properties,
-	data: t.Object({
-		token: t.String(),
-		exp: t.Union([t.String(), t.Number()]),
-	}),
+  ...ResponseBaseModel.properties,
+  data: t.Object({
+    token: t.String(),
+    exp: t.Union([t.String(), t.Number()]),
+  }),
 });
 
 type ResponseLogin = typeof ResponseLoginModel.static;

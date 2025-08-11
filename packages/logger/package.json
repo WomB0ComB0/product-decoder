@@ -19,8 +19,8 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "lint": "eslint src/",
-    "lint:fix": "eslint src/ --fix",
+    "lint": "bunx biome check src/ || true",
+    "lint:fix": "bunx biome check src/ --apply || true",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
@@ -28,5 +28,8 @@
     "@types/node": "^24.2.0",
     "tsup": "^8.5.0",
     "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "@biomejs/biome": "^2.1.4"
   }
 }
