@@ -1,7 +1,7 @@
 declare global {
   namespace NodeJS {
     interface ProcessEnv {
-      readonly NODE_ENV: "development" | "production";
+      readonly NODE_ENV: 'development' | 'production';
       readonly SENTRY_DSN: string;
       readonly SENTRY_AUTH_TOKEN: string;
       readonly SENTRY_PROJECT: string;
@@ -15,4 +15,4 @@ declare global {
   }
 }
 
-export { };
+export {};

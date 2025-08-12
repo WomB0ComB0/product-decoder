@@ -100,10 +100,58 @@ export default function LoginPage() {
               </span>
             </div>
             <div className="flex flex-col gap-2">
-              <Button type="button" variant="outline" className="w-full" size="lg">
+              <Button 
+                type="button" 
+                variant="outline" 
+                className="w-full" 
+                size="lg"
+                disabled={isLoading}
+                onClick={() =>
+                  authClient.signIn.social(
+                    {
+                      provider: "github",
+                      callbackURL: redirectUrl,
+                    },
+                    {
+                      onRequest: () => {
+                        setIsLoading(true);
+                        setErrorMessage("");
+                      },
+                      onError: (ctx) => {
+                        setIsLoading(false);
+                        setErrorMessage(ctx.error.message);
+                      },
+                    },
+                  )
+                }
+              >
                 Continue with Google
               </Button>
-              <Button type="button" variant="outline" className="w-full" size="lg">
+              <Button 
+                type="button" 
+                variant="outline" 
+                className="w-full" 
+                size="lg"
+                disabled={isLoading}
+                onClick={() =>
+                  authClient.signIn.social(
+                    {
+                      provider: "google",
+                      callbackURL: redirectUrl,
+                    },
+                    {
+                      onRequest: () => {
+                        setIsLoading(true);
+                        setErrorMessage("");
+                      },
+                      onError: (ctx) => {
+                        setIsLoading(false);
+                        setErrorMessage(ctx.error.message);
+                      },
+                    },
+                  )
+                }
+              >
                 Continue with GitHub
               </Button>
             </div>
