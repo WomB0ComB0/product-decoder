@@ -21,6 +21,7 @@
     "@opentelemetry/resources": "^2.0.1",
     "@prisma/client": "^6.11.1",
     "@sentry/cli": "^2.50.2",
+    "@types/bun": "^1.2.20",
     "@types/jsonwebtoken": "^9.0.10",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",

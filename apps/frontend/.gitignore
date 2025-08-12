@@ -1,30 +1,62 @@
-node_modules
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# Ignore lockfiles we don't use
-# package-lock.json
-# yarn.lock
-# pnpm-lock.yaml
-# bun.lock
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
 
-.DS_Store
-.cache
-.env
+# testing
+/coverage
 
-.data
-.vercel
-.output
-.wrangler
-.netlify
-dist
+# next.js
+/.next/
+/out/
+
+# production
+/build
+/dist
+/.output
 /.million
 /.nitro
-/build/
+
+# misc
+.DS_Store
+.cache
+.data
+.tanstack
+/generated/prisma
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+.env
+.env.sentry-build-plugin
+
+# vercel
+.vercel
+
+# netlify
+.netlify
+
+# wrangler
+.wrangler
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# server and public build outputs
 /api/
 /server/build
 /public/build
-
-.tanstack
-/generated/prisma
-
-# Sentry Config File
-.env.sentry-build-plugin

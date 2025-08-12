@@ -1,15 +1,15 @@
-import { jwt } from '@elysiajs/jwt';
-import Elysia from 'elysia';
-import prismaElysia from '#decorators/prisma';
 import env from '#helpers/env';
 import { databaseError, globalError, serverError } from '#helpers/errors';
-import { jwtConfig } from '#helpers/jwt';
 import { type ResponseError, ResponseErrorModel } from '#helpers/models';
-import { type ResponseUser, ResponseUserModel } from '#modules/user/response.models';
+import { jwt } from '@elysiajs/jwt';
+import Elysia from 'elysia';
 import { loginAuth, registerAuth } from './handler';
 import { PayloadLoginModel, PayloadRegisterModel } from './models';
 import { ResponseLoginModel } from './response.models';
 import { encodeSubAuth } from './service';
+import prismaElysia from "#/decorators/prisma";
+import { jwtConfig } from "#/helpers";
+import { ResponseUser, ResponseUserModel } from "../user";
 
 const authRoutes = new Elysia({ prefix: '/auth' })
   .use(jwt(jwtConfig))
@@ -18,9 +18,7 @@ const authRoutes = new Elysia({ prefix: '/auth' })
     '/register',
     async ({ body, prisma, set }): Promise<ResponseUser> => {
       const registerRecordUser = await registerAuth(prisma, body);
-
       set.status = 201;
-
       return {
         statusCode: 201,
         success: true,
@@ -38,7 +36,7 @@ const authRoutes = new Elysia({ prefix: '/auth' })
   )
   .post(
     '/login',
-    async ({ body, prisma, jwt }) => {
+    async ({ body, jwt, set, prisma }) => {
       const { userId } = await loginAuth(prisma, body);
 
       const token = await jwt.sign({

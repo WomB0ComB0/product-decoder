@@ -1,1 +1,1 @@
-export * from './seo.ts';
+export * from './seo.js';

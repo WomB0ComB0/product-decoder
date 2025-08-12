@@ -1,1 +1,2 @@
-export * from './xss.ts'
+export * from './xss.js';
+
