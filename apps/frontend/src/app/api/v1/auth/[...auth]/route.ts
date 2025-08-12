@@ -1,19 +1,8 @@
+import { auth } from "@/lib/auth";
+import { toNextJsHandler } from "better-auth/next-js";
 import { NextRequest } from "next/server";
-import { auth } from "~/lib/auth";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { auth: string[] } }
-) {
-  return auth.handler(request);
-}
-
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { auth: string[] } }
-) {
-  return auth.handler(request);
-}
+export const { GET, POST } = toNextJsHandler(auth.handler);
 
 export async function HEAD(request: NextRequest) {
   try {

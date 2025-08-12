@@ -7,9 +7,9 @@ import { loginAuth, registerAuth } from './handler';
 import { PayloadLoginModel, PayloadRegisterModel } from './models';
 import { ResponseLoginModel } from './response.models';
 import { encodeSubAuth } from './service';
-import prismaElysia from "#/decorators/prisma";
-import { jwtConfig } from "#/helpers";
-import { ResponseUser, ResponseUserModel } from "../user";
+import prismaElysia from '#/decorators/prisma';
+import { jwtConfig } from '#/helpers';
+import { type ResponseUser, ResponseUserModel } from '../user';
 
 const authRoutes = new Elysia({ prefix: '/auth' })
   .use(jwt(jwtConfig))

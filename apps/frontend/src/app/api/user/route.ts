@@ -1,20 +1,22 @@
-import { NextRequest } from "next/server";
-import { auth } from "~/lib/auth";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { NextResponse } from "next/server";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await auth.api.getSession({
-      headers: request.headers
+      headers: await headers(),
     });
 
-    if (!session?.user) {
-      return Response.json(null);
+    if (!session) {
+      return NextResponse.json({ user: null }, { status: 401 });
     }
 
-    return Response.json(session.user);
+    return NextResponse.json({ user: session.user });
   } catch (error) {
-    return Response.json(
-      { error: error instanceof Error ? error.message : String(error) },
+    console.error("Error getting user session:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
       { status: 500 }
     );
   }

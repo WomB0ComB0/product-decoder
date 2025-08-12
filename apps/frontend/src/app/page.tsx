@@ -3,10 +3,10 @@
 import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import ThemeToggle from "~/components/theme-toggle";
-import { Button } from "~/components/ui/button";
-import authClient from "~/lib/auth/auth-client";
-import { useUser } from "~/lib/auth/functions/get-user";
+import ThemeToggle from "@/components/theme-toggle";
+import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth/auth-client";
+import { useUser } from "@/lib/auth/functions/get-user";
 
 export default function Home() {
   const { data: user, isLoading } = useUser();

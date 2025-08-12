@@ -1,14 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { createServerFn } from "@tanstack/react-start";
-import { getWebRequest } from "@tanstack/react-start/server";
-import { auth } from "~/lib/auth";
-
-export const getUser = createServerFn({ method: "GET" }).handler(async () => {
-  const { headers } = getWebRequest();
-  const session = await auth.api.getSession({ headers });
-
-  return session?.user || null;
-});
 
 // Client-side hook for getting user data
 export function useUser() {
@@ -17,9 +7,13 @@ export function useUser() {
     queryFn: async () => {
       const response = await fetch("/api/user");
       if (!response.ok) {
+        if (response.status === 401) {
+          return null;
+        }
         throw new Error("Failed to fetch user");
       }
-      return response.json();
+      const data = await response.json();
+      return (data as { user: any }).user;
     },
   });
 }

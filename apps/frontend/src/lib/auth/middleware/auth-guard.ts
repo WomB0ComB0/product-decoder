@@ -1,31 +1,30 @@
-import { createMiddleware } from "@tanstack/react-start";
-import { getWebRequest, setResponseStatus } from "@tanstack/react-start/server";
-import { auth } from "~/lib/auth";
-
-// https://tanstack.com/start/latest/docs/framework/react/middleware
-// This is a sample middleware that you can use in your server functions.
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 /**
- * Middleware to force authentication on a server function, and add the user to the context.
+ * Server-side function to check if user is authenticated
+ * Use this in server actions or server components
  */
-export const authMiddleware = createMiddleware({ type: "function" }).server(
-  async ({ next }) => {
-    const { headers } = getWebRequest();
+export async function requireAuth() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-    const session = await auth.api.getSession({
-      headers,
-      query: {
-        // ensure session is fresh
-        // https://www.better-auth.com/docs/concepts/session-management#session-caching
-        disableCookieCache: true,
-      },
-    });
+  if (!session) {
+    throw new Error("Unauthorized");
+  }
 
-    if (!session) {
-      setResponseStatus(401);
-      throw new Error("Unauthorized");
-    }
+  return session.user;
+}
 
-    return next({ context: { user: session.user } });
-  },
-);
+/**
+ * Server-side function to get user session (doesn't throw if not authenticated)
+ * Use this in server actions or server components
+ */
+export async function getAuthSession() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  return session;
+}

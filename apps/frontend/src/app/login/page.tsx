@@ -4,10 +4,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { GalleryVerticalEnd, LoaderCircle } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
-import authClient from "~/lib/auth/auth-client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { authClient } from "@/lib/auth/auth-client";
 
 export default function LoginPage() {
   const searchParams = useSearchParams();

@@ -1,17 +1,74 @@
 {
-  "extends": "./src/next/tsconfig.json",
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Next.js",
   "compilerOptions": {
-    // Project-specific overrides can go here if needed
+    "baseUrl": ".",
+    "paths": {
+      "@/constants": ["src/constants"],
+      "@/lib": ["src/lib"],
+      "@/schemas": ["src/schemas"],
+      "@/data/*": ["src/data/*"],
+      "@/components/*": ["src/components/*"],
+      "@testing": ["./test-fixtures.ts"],
+      // Exclude @/packages/* to avoid mapping workspace dependencies
+      "@/*": ["./src/*", "!./../../../packages/*"]
+    },
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "target": "es2022",
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "moduleDetection": "force",
+    "isolatedModules": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "checkJs": true,
+    "lib": ["dom", "dom.iterable", "es2022"],
+    "noEmit": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "preserve", // Use "react" if needed
+    "types": ["react"],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
     "incremental": true,
-    "allowImportingTsExtensions": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "alwaysStrict": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "allowUnreachableCode": false,
+    "noFallthroughCasesInSwitch": true,
+    "outDir": "out",
+    "declaration": false,
+    "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true
   },
   "include": [
+    "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "../../packages/shared/src/constants/app.ts",
-    "next-env.d.ts",
-    ".next/types/**/*.ts"
+    "**/*.cjs",
+    "**/*.js",
+    "./src/types/python.d.ts",
+    ".next/types/**/*.ts",
+    "next.config.mjs",
+    "custom.d.ts",
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.js"
+  ]
 }

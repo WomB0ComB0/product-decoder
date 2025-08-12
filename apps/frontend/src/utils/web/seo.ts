@@ -1,4 +1,4 @@
-import { app } from "@/packages/shared/constants";
+import { app } from "@packages/shared";
 
 export const seo = ({
   title,
@@ -25,8 +25,8 @@ export const seo = ({
   imageWidth?: string;
   imageHeight?: string;
 }) => {
-  const imageUrl = `${import.meta.env.VITE_BASE_URL}${image || "/assets/images/logo.png"}`;
-  const pageUrl = url || import.meta.env.VITE_BASE_URL;
+  const imageUrl = `${process.env.BASE_URL}${image || "/assets/images/logo.png"}`;
+  const pageUrl = url || process.env.BASE_URL;
 
   return [
     { title },

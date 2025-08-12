@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Button } from "~/components/ui/button";
-import { useUser } from "~/lib/auth/functions/get-user";
+import { Button } from "@/components/ui/button";
+import { useUser } from "@/lib/auth/functions/get-user";
 
 export default function DashboardLayout({
   children,
