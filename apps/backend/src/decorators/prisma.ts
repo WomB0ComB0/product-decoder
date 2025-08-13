@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@packages/db';
 import type Elysia from 'elysia';
 
 const prisma = new PrismaClient();
