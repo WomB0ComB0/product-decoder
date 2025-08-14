@@ -2,25 +2,100 @@
   "$schema": "https://turbo.build/schema.json",
   "tasks": {
     "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": ["dist/**", "build/**"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env*"
+      ],
+      "outputs": [
+        "dist/**",
+        "build/**"
+      ]
     },
     "test": {
-      "dependsOn": ["^build"]
+      "dependsOn": [
+        "^build"
+      ]
     },
     "lint": {
-      "dependsOn": ["^build"]
+      "dependsOn": [
+        "^build"
+      ]
     },
     "types": {
-      "dependsOn": ["^build"]
+      "dependsOn": [
+        "^build"
+      ]
     },
     "dev": {
-      "dependsOn": ["^build"],
+      "dependsOn": [
+        "^build"
+      ],
       "persistent": true
     },
     "clean": {
       "cache": false
+    }
+  },
+  "pipeline": {
+    "build": {
+      "env": [
+        "BASE_URL",
+        "BETTER_AUTH_SECRET",
+        "DATABASE_URL",
+        "GEMINI_API_KEY",
+        "GITHUB_CLIENT_ID",
+        "GITHUB_CLIENT_SECRET",
+        "GOOGLE_CLIENT_ID",
+        "GOOGLE_CLIENT_SECRET",
+        "JWT_EXPIRED",
+        "JWT_SECRETS",
+        "PRISMA_SCHEMA_PATH",
+        "SENTRY_AUTH_TOKEN",
+        "SENTRY_ORG",
+        "SENTRY_PROJECT",
+        "SERVER_PORT",
+      ]
+    },
+    "dev": {
+      "env": [
+        "BASE_URL",
+        "BETTER_AUTH_SECRET",
+        "DATABASE_URL",
+        "GEMINI_API_KEY",
+        "GITHUB_CLIENT_ID",
+        "GITHUB_CLIENT_SECRET",
+        "GOOGLE_CLIENT_ID",
+        "GOOGLE_CLIENT_SECRET",
+        "JWT_EXPIRED",
+        "JWT_SECRETS",
+        "PRISMA_SCHEMA_PATH",
+        "SENTRY_AUTH_TOKEN",
+        "SENTRY_ORG",
+        "SENTRY_PROJECT",
+        "SERVER_PORT",
+      ]
+    },
+    "start": {
+      "env": [
+        "BASE_URL",
+        "BETTER_AUTH_SECRET",
+        "DATABASE_URL",
+        "GEMINI_API_KEY",
+        "GITHUB_CLIENT_ID",
+        "GITHUB_CLIENT_SECRET",
+        "GOOGLE_CLIENT_ID",
+        "GOOGLE_CLIENT_SECRET",
+        "JWT_EXPIRED",
+        "JWT_SECRETS",
+        "PRISMA_SCHEMA_PATH",
+        "SENTRY_AUTH_TOKEN",
+        "SENTRY_ORG",
+        "SENTRY_PROJECT",
+        "SERVER_PORT",
+      ]
     }
   }
 }
