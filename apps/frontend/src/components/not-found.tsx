@@ -1,4 +1,4 @@
-import { Link } from 'next/link'
+import Link  from 'next/link'
 import { Button } from "./ui/button";
 
 export function NotFound() {
@@ -10,7 +10,7 @@ export function NotFound() {
           Go back
         </Button>
         <Button asChild variant="secondary">
-          <Link to="/">Home</Link>
+          <Link href="/">Home</Link>
         </Button>
       </p>
     </div>

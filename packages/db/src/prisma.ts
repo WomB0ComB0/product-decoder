@@ -1,6 +1,3 @@
 export class Prisma {
-  constructor () {
-
-  }
+  constructor() {}
 }
-

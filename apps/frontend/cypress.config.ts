@@ -1,7 +1,4 @@
-import { defineConfig } from "cypress";
-
-
-export default defineConfig({
+export default (await import('cypress')).defineConfig({
   viewportWidth: 1000,
   viewportHeight: 800,
   defaultCommandTimeout: 40000,

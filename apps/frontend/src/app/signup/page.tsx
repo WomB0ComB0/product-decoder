@@ -18,7 +18,7 @@ export default function SignupPage() {
   // const router = useRouter();
 
   // const [isLoading, setIsLoading] = useState(false);
-  // const [errorMessage, setErrorMessage] = useState("");
+  // const [errorMessaapps/frontend/src/app/page.tsxge, setErrorMessage] = useState("");
 
   // const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
   //   e.preventDefault();

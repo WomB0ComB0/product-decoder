@@ -7,7 +7,7 @@ import { useState } from "react";
 
 export default function Home() {
   const [activeCard, setActiveCard] = useState("nutrition_facts");
-  const [hoverCard, setHoverCard] = useState<string | null>(null);
+  // const [hoverCard, setHoverCard] = useState<string | null>(null);
 
   return (
     <div className="min-h-screen bg-[#FFF6E6] text-gray-900">
@@ -30,7 +30,7 @@ export default function Home() {
             <Link href="/" className="text-[#D26B36]">
               Home
             </Link>
-            <Link href="/try" className="hover:text-[#D26B36]">
+            <Link href="#try" className="hover:text-[#D26B36]">
               Try out
             </Link>
             <Link href="/login" className="hover:text-[#D26B36]">
@@ -53,7 +53,7 @@ export default function Home() {
 
             <div className="mt-10 flex items-center gap-10">
               <Link
-                href="/try"
+                href="#try"
                 className="bg-[#5D5FEF] text-white font-semibold px-6 py-3 rounded-md shadow-md flex items-center gap-2"
               >
                 <ArrowUpRight className="w-4 h-4" />
