@@ -106,7 +106,7 @@ async function readTurboConfig(turboPath: string): Promise<TurboConfig> {
     }
     
     const content = await readFile(turboPath, 'utf-8');
-    return JSON.parse(content);
+    return JSON.parse(content) as TurboConfig;
   } catch (error) {
     console.warn(`Could not read turbo.json: ${error}`);
     return {

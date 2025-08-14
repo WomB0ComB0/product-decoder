@@ -2,6 +2,9 @@
   "$schema": "https://turbo.build/schema.json",
   "tasks": {
     "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": ["dist/**", "build/**"],
       "env": [
         "BASE_URL",
         "BETTER_AUTH_SECRET",
@@ -20,7 +23,18 @@
         "SERVER_PORT"
       ]
     },
+    "test": {
+      "dependsOn": ["^build"]
+    },
+    "lint": {
+      "dependsOn": ["^build"]
+    },
+    "types": {
+      "dependsOn": ["^build"]
+    },
     "dev": {
+      "dependsOn": ["^build"],
+      "persistent": true,
       "env": [
         "BASE_URL",
         "BETTER_AUTH_SECRET",
@@ -38,6 +52,9 @@
         "SENTRY_PROJECT",
         "SERVER_PORT"
       ]
+    },
+    "clean": {
+      "cache": false
     },
     "start": {
       "env": [
