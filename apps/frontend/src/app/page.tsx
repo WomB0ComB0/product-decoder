@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, PlayCircle } from "lucide-react";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   const [activeCard, setActiveCard] = useState("nutrition_facts");
@@ -60,10 +61,10 @@ export default function Home() {
                 Try Product Decoder
               </Link>
 
-              <button className="text-gray-700 font-medium flex items-center gap-2">
+              <Button variant={`ghost`} className="text-gray-700 font-medium flex items-center gap-2">
                 <PlayCircle className="w-5 h-5" />
                 Watch Demo
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -103,7 +104,7 @@ export default function Home() {
       </main>
 
       {/* HOW IT WORKS SECTION */}
-      <section className="bg-[#5A5CF0] py-20 px-6">
+      <section className="bg-[#5A5CF0] py-20 px-6 container mx-auto rounded-xl">
         <div className="mx-auto max-w-7xl text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-16">
             How it works
@@ -166,7 +167,7 @@ export default function Home() {
       </section>
 
       {/* POWERFUL FEATURES SECTION */}
-      <section className="bg-[#FFF6E6] pt-32 pb-0 px-6">
+      <section className="bg-[#FFF6E6] pt-32 pb-15 container mx-auto">
         <div className="mx-auto max-w-7xl text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-[#5D5FEF] mb-16">
             Powerful features
@@ -183,7 +184,7 @@ export default function Home() {
                 onClick={() => setActiveCard(key)}
                 className={`rounded-t-xl px-6 py-3 font-semibold text-lg transition-all duration-300 focus:outline-none ${
                   activeCard === key
-                    ? `text-white z-20 -mb-1 shadow-md`
+                    ? `text-white z-20 -mb-1`
                     : `opacity-80 z-10`
                 }`}
                 style={{
@@ -200,7 +201,7 @@ export default function Home() {
 
         {/* Bottom container that expands to full width and height */}
         <div
-          className="mt-0 pt-20 pb-24 text-white text-center text-lg leading-relaxed px-6"
+          className="mt-0 pt-20 pb-24 text-white text-center text-lg leading-relaxed px-6 rounded-xl"
           style={{
             backgroundColor:
               activeCard === "nutrition_facts"

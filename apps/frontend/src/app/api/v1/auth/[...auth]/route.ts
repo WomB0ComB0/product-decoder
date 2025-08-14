@@ -1,17 +1,15 @@
 import { auth } from "@/lib/auth";
 import { toNextJsHandler } from "better-auth/next-js";
-import { NextRequest } from "next/server";
+import { headers } from "next/headers";
 
 export const dynamic = 'force-dynamic';
 
 export const { GET, POST } = toNextJsHandler(auth.handler);
 
-export async function HEAD(request: NextRequest) {
+export async function HEAD() {
   try {
-    const headers = Object.fromEntries(request.headers.entries());
-
     return Response.json({
-      headers,
+      headers: await headers(),
       status: 200,
     });
   } catch (error) {
