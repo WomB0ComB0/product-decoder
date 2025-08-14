@@ -20,7 +20,7 @@ import { existsSync } from 'node:fs';
 
 interface TurboConfig {
   $schema?: string;
-  pipeline?: {
+  tasks?: {
     [task: string]: {
       env?: string[];
       [key: string]: any;
@@ -101,7 +101,7 @@ async function readTurboConfig(turboPath: string): Promise<TurboConfig> {
     if (!existsSync(turboPath)) {
       return {
         $schema: "https://turbo.build/schema.json",
-        pipeline: {}
+        tasks: {}
       };
     }
     
@@ -111,7 +111,7 @@ async function readTurboConfig(turboPath: string): Promise<TurboConfig> {
     console.warn(`Could not read turbo.json: ${error}`);
     return {
       $schema: "https://turbo.build/schema.json",
-      pipeline: {}
+      tasks: {}
     };
   }
 }
@@ -125,8 +125,8 @@ async function updateTurboConfig(
   envVars: string[], 
   tasks: string[] = ['build', 'dev', 'start']
 ): Promise<void> {
-  if (!config.pipeline) {
-    config.pipeline = {};
+  if (!config.tasks) {
+    config.tasks = {};
   }
   
   // Sort environment variables for consistent output
@@ -134,15 +134,15 @@ async function updateTurboConfig(
   
   // Update each specified task
   for (const task of tasks) {
-    if (!config.pipeline[task]) {
-      config.pipeline[task] = {};
+    if (!config.tasks[task]) {
+      config.tasks[task] = {};
     }
     
     // Merge with existing env vars if they exist
-    const existingEnvVars = config.pipeline[task].env || [];
+    const existingEnvVars = config.tasks[task].env || [];
     const mergedEnvVars = [...new Set([...existingEnvVars, ...sortedEnvVars])].sort();
     
-    config.pipeline[task].env = mergedEnvVars;
+    config.tasks[task].env = mergedEnvVars;
   }
   
   // Write back to file with pretty formatting
@@ -194,8 +194,8 @@ async function main() {
   
   const tasks = ['build', 'dev', 'start'];
   for (const task of tasks) {
-    if (turboConfig.pipeline?.[task]?.env) {
-      console.log(`   ${task}: ${turboConfig.pipeline[task].env!.length} variables`);
+    if (turboConfig.tasks?.[task]?.env) {
+      console.log(`   ${task}: ${turboConfig.tasks[task].env!.length} variables`);
     }
   }
   
