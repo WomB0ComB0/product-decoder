@@ -4,9 +4,11 @@
   "private": true,
   "main": "./build/index.js",
   "module": "./build/index.js",
+  "types": "./build/index.d.ts",
   "exports": {
     ".": {
-      "import": "./build/index.js"
+      "import": "./build/index.js",
+      "types": "./build/index.d.ts"
     },
     "./src/*": {
       "import": "./src/*"
@@ -16,7 +18,9 @@
     "db:gen": "bun ./src/database.gen.ts",
     "db:seed": "bun ./src/seed.ts",
     "lint": "bunx biome format --write . || true",
-    "build": "bun run db:gen && bun run lint && bun build src/index.ts --outdir=build --target=bun --minify"
+    "type-check": "tsc --noEmit",
+    "build:clean": "rm -rf build && rm -rf src/generated",
+    "build": "bun run build:clean && bun run db:gen && bun run lint && bun build src/index.ts --outdir=build --target=bun --minify && tsc --emitDeclarationOnly --outDir build --skipLibCheck"
   },
   "devDependencies": {
     "@types/bun": "latest"

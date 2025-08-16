@@ -1,26 +1,24 @@
 {
   "name": "product-decoder",
-  "type": "module",
   "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "lint": "turbo run lint",
-    "test": "turbo run test",
-    "types": "turbo run check",
     "gen:copy": "bun ./bin/gen/copyright.gen.ts",
     "gen:docs": "bun ./bin/gen/jsdoc.gen.ts",
     "lighthouse": "bun ./bin/light-house.ts",
+    "lint": "turbo run lint",
     "pkg:costs": "bun ./bin/package-cost.ts",
     "rm:dupes": "bun ./bin/remove-duplicate-packages.ts",
+    "test": "turbo run test",
     "ts:shake": "bun ./bin/unused-tree-shake.ts",
+    "types": "turbo run check",
     "update:sec": "bun ./bin/update-security-md.js"
-  },
-  "devDependencies": {
-    "@types/bun": "^1.2.20"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
   },
   "dependencies": {
     "@google/genai": "^1.13.0",
@@ -29,12 +27,14 @@
     "concurrently": "^9.2.0",
     "turbo": "^2.5.5"
   },
-  "engines": {
-    "node": ">=24"
+  "devDependencies": {
+    "@types/bun": "^1.2.20"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
   },
   "packageManager": "bun@1.2.20",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ]
+  "engines": {
+    "node": ">=24"
+  }
 }

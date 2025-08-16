@@ -11,15 +11,15 @@ Table users {
   image String
   password String
   role Role [not null, default: 'MEMBER']
-  accounts accounts [not null]
-  sessions sessions [not null]
   isTwoFactorEnabled Boolean [not null, default: false]
-  twoFactorConfirmation two_factor_confirmations
   twoFactorConfirmationId String
   profile profiles
+  accounts accounts [not null]
+  sessions sessions [not null]
   imageProcesses image_processes [not null]
   userTopResults user_top_results [not null]
   userChoices user_choices [not null]
+  twoFactorConfirmation two_factor_confirmations
 }
 
 Table accounts {
@@ -120,7 +120,7 @@ Table image_processes {
   id String [pk]
   userId String [not null]
   imageUrl String [not null]
-  processedAt DateTime [not null]
+  processedAt DateTime [default: `now()`, not null]
   user users [not null]
   topResults top_results [not null]
 }
@@ -129,7 +129,7 @@ Table top_results {
   id String [pk]
   imageProcessId String [not null]
   resultData String [not null]
-  createdAt DateTime [not null]
+  createdAt DateTime [default: `now()`, not null]
   imageProcess image_processes [not null]
   metadata metadata [not null]
   userTopResults user_top_results [not null]
@@ -140,7 +140,7 @@ Table metadata {
   id String [pk]
   topResultId String [not null]
   data String [not null]
-  createdAt DateTime [not null]
+  createdAt DateTime [default: `now()`, not null]
   topResult top_results [not null]
   uuidRelations uuid_relations [not null]
   productCategories product_categories [not null]
@@ -150,7 +150,7 @@ Table uuid_relations {
   id String [pk]
   metadataId String [not null]
   foreignKey String [not null]
-  createdAt DateTime [not null]
+  createdAt DateTime [default: `now()`, not null]
   metadata metadata [not null]
 }
 
@@ -159,7 +159,7 @@ Table product_categories {
   metadataId String [not null]
   categoryType String [not null]
   name String [not null]
-  createdAt DateTime [not null]
+  createdAt DateTime [default: `now()`, not null]
   metadata metadata [not null]
   primitiveCategories primitive_categories [not null]
   nonPrimitiveCategories non_primitive_categories [not null]
@@ -242,7 +242,7 @@ Table technology_pipelines {
 Table location_pricing_layers {
   id String [pk]
   pipelineType String [not null]
-  createdAt DateTime [not null]
+  createdAt DateTime [default: `now()`, not null]
   foodPipelineId String
   clothesPipelineId String
   drugsPipelineId String
@@ -255,9 +255,12 @@ Table location_pricing_layers {
 
 Table search_results {
   id String [pk]
-  pipelineId String [not null]
   expandedData String [not null]
-  createdAt DateTime [not null]
+  createdAt DateTime [default: `now()`, not null]
+  foodPipelineId String
+  clothesPipelineId String
+  drugsPipelineId String
+  technologyPipelineId String
   expandedFKRelations expanded_fk_relations [not null]
   outputInfos output_infos [not null]
   foodPipeline food_pipelines
@@ -270,7 +273,7 @@ Table expanded_fk_relations {
   id String [pk]
   searchResultId String [not null]
   foreignKey String [not null]
-  createdAt DateTime [not null]
+  createdAt DateTime [default: `now()`, not null]
   searchResult search_results [not null]
 }
 
@@ -278,7 +281,7 @@ Table output_infos {
   id String [pk]
   searchResultId String [not null]
   info String [not null]
-  createdAt DateTime [not null]
+  createdAt DateTime [default: `now()`, not null]
   searchResult search_results [not null]
 }
 
@@ -286,7 +289,7 @@ Table user_choices {
   id String [pk]
   userId String [not null]
   topResultId String [not null]
-  selectedAt DateTime [not null]
+  selectedAt DateTime [default: `now()`, not null]
   user users [not null]
   topResult top_results [not null]
 }
@@ -295,8 +298,6 @@ Table api_integrations {
   id String [pk]
   type String [not null]
   details String [not null]
-  primitiveCategoryId String
-  nonPrimitiveCategoryId String
   primitiveCategory primitive_categories
   nonPrimitiveCategory non_primitive_categories
   FoodPipeline food_pipelines
@@ -307,9 +308,12 @@ Table api_integrations {
 
 Table locations {
   id String [pk]
-  pipelineId String [not null]
   nearestLocation String [not null]
-  createdAt DateTime [not null]
+  createdAt DateTime [default: `now()`, not null]
+  foodPipelineId String
+  clothesPipelineId String
+  drugsPipelineId String
+  technologyPipelineId String
   foodPipeline food_pipelines
   clothesPipeline clothes_pipelines
   drugsPipeline drugs_pipelines
@@ -318,9 +322,12 @@ Table locations {
 
 Table pricings {
   id String [pk]
-  pipelineId String [not null]
   priceChangeHistory String [not null]
-  createdAt DateTime [not null]
+  createdAt DateTime [default: `now()`, not null]
+  foodPipelineId String
+  clothesPipelineId String
+  drugsPipelineId String
+  technologyPipelineId String
   foodPipeline food_pipelines
   clothesPipeline clothes_pipelines
   drugsPipeline drugs_pipelines
@@ -331,7 +338,7 @@ Table user_top_results {
   id String [pk]
   userId String [not null]
   topResultId String [not null]
-  selectedAt DateTime [not null]
+  selectedAt DateTime [default: `now()`, not null]
   user users [not null]
   topResult top_results [not null]
 }
@@ -426,13 +433,13 @@ Ref: location_pricing_layers.drugsPipelineId > drugs_pipelines.id
 
 Ref: location_pricing_layers.technologyPipelineId > technology_pipelines.id
 
-Ref: search_results.pipelineId > food_pipelines.id
+Ref: search_results.foodPipelineId > food_pipelines.id
 
-Ref: search_results.pipelineId > clothes_pipelines.id
+Ref: search_results.clothesPipelineId > clothes_pipelines.id
 
-Ref: search_results.pipelineId > drugs_pipelines.id
+Ref: search_results.drugsPipelineId > drugs_pipelines.id
 
-Ref: search_results.pipelineId > technology_pipelines.id
+Ref: search_results.technologyPipelineId > technology_pipelines.id
 
 Ref: expanded_fk_relations.searchResultId > search_results.id [delete: Cascade]
 
@@ -442,21 +449,21 @@ Ref: user_choices.userId > users.id [delete: Cascade]
 
 Ref: user_choices.topResultId > top_results.id [delete: Cascade]
 
-Ref: locations.pipelineId > food_pipelines.id
+Ref: locations.foodPipelineId > food_pipelines.id
 
-Ref: locations.pipelineId > clothes_pipelines.id
+Ref: locations.clothesPipelineId > clothes_pipelines.id
 
-Ref: locations.pipelineId > drugs_pipelines.id
+Ref: locations.drugsPipelineId > drugs_pipelines.id
 
-Ref: locations.pipelineId > technology_pipelines.id
+Ref: locations.technologyPipelineId > technology_pipelines.id
 
-Ref: pricings.pipelineId > food_pipelines.id
+Ref: pricings.foodPipelineId > food_pipelines.id
 
-Ref: pricings.pipelineId > clothes_pipelines.id
+Ref: pricings.clothesPipelineId > clothes_pipelines.id
 
-Ref: pricings.pipelineId > drugs_pipelines.id
+Ref: pricings.drugsPipelineId > drugs_pipelines.id
 
-Ref: pricings.pipelineId > technology_pipelines.id
+Ref: pricings.technologyPipelineId > technology_pipelines.id
 
 Ref: user_top_results.userId > users.id [delete: Cascade]
 

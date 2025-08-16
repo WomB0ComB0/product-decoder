@@ -1,3 +1,3 @@
-export class Prisma {
-  constructor() {}
-}
+// export class Prisma {
+//   constructor() {}
+// }

@@ -3,8 +3,13 @@ generator client {
 }
 
 generator zod {
-  provider = "prisma-zod-generator"
-  output   = "../src/generated"
+  provider                          = "prisma-zod-generator"
+  output                            = "../src/generated/schemas"
+  createInputTypes                  = true
+  addInputTypeValidation            = false
+  createOptionalDefaultValuesTypes  = true
+  createRelationValuesTypes         = true
+  createPartialTypes                = true
 }
 
 datasource db {
@@ -17,7 +22,7 @@ generator dbml {
 }
 
 model User {
-  id                      String                 @id @default(auto()) @map("_id") @db.ObjectId()
+  id                      String                 @id @default(auto()) @map("_id") @db.ObjectId
   name                    String?
   email                   String?                @unique
   emailVerified           Boolean?               @map("email_verified")
@@ -25,21 +30,21 @@ model User {
   image                   String?
   password                String?
   role                    Role                   @default(MEMBER)
-  accounts                Account[]
-  sessions                Session[]
   isTwoFactorEnabled      Boolean                @default(false)
-  twoFactorConfirmation   TwoFactorConfirmation?
   twoFactorConfirmationId String?
   profile                 Profile?
+  accounts                Account[]
+  sessions                Session[]
   imageProcesses          ImageProcess[]
   userTopResults          UserTopResult[]
   userChoices             UserChoice[]
+  twoFactorConfirmation   TwoFactorConfirmation?
 
   @@map("users")
 }
 
 model Account {
-  id                String  @id @default(auto()) @map("_id") @db.ObjectId()
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
   userId            String  @db.ObjectId
   type              String
   provider          String
@@ -58,7 +63,7 @@ model Account {
 }
 
 model Session {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId()
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
   sessionToken String   @unique
   userId       String   @db.ObjectId
   expires      DateTime
@@ -68,7 +73,7 @@ model Session {
 }
 
 model VerificationToken {
-  id      String   @id @default(auto()) @map("_id") @db.ObjectId()
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
   email   String
   token   String   @unique
   expires DateTime
@@ -78,7 +83,7 @@ model VerificationToken {
 }
 
 model PasswordResetToken {
-  id      String   @id @default(auto()) @map("_id") @db.ObjectId()
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
   email   String
   token   String   @unique
   expires DateTime
@@ -88,7 +93,7 @@ model PasswordResetToken {
 }
 
 model TwoFactorToken {
-  id      String   @id @default(auto()) @map("_id") @db.ObjectId()
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
   email   String
   token   String   @unique
   expires DateTime
@@ -98,16 +103,15 @@ model TwoFactorToken {
 }
 
 model TwoFactorConfirmation {
-  id     String @id @default(auto()) @map("_id") @db.ObjectId()
-  userId String @db.ObjectId
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @unique @db.ObjectId // This should be unique for a one-to-one
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([userId])
   @@map("two_factor_confirmations")
 }
 
 model Profile {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId()
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   userId    String   @unique @db.ObjectId
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   role      Role     @default(MEMBER)
@@ -116,8 +120,7 @@ model Profile {
   photoUrl  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  address Address?
+  address   Address?
 
   @@map("profiles")
 }
@@ -128,7 +131,7 @@ enum Role {
 }
 
 model Address {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId()
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   profileId String   @unique @db.ObjectId
   profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
   line1     String
@@ -146,10 +149,10 @@ model Address {
 // --- Product Categorization and User Management Data Model Extension ---
 
 model ImageProcess {
-  id          String      @id @default(auto()) @map("_id") @db.ObjectId()
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
   userId      String      @db.ObjectId
   imageUrl    String
-  processedAt DateTime
+  processedAt DateTime    @default(now())
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   topResults  TopResult[]
 
@@ -157,10 +160,10 @@ model ImageProcess {
 }
 
 model TopResult {
-  id             String          @id @default(auto()) @map("_id") @db.ObjectId()
+  id             String          @id @default(auto()) @map("_id") @db.ObjectId
   imageProcessId String          @db.ObjectId
   resultData     String
-  createdAt      DateTime
+  createdAt      DateTime        @default(now())
   imageProcess   ImageProcess    @relation(fields: [imageProcessId], references: [id], onDelete: Cascade)
   metadata       Metadata[]
   userTopResults UserTopResult[]
@@ -170,10 +173,10 @@ model TopResult {
 }
 
 model Metadata {
-  id                String            @id @default(auto()) @map("_id") @db.ObjectId()
+  id                String            @id @default(auto()) @map("_id") @db.ObjectId
   topResultId       String            @db.ObjectId
   data              String
-  createdAt         DateTime
+  createdAt         DateTime          @default(now())
   topResult         TopResult         @relation(fields: [topResultId], references: [id], onDelete: Cascade)
   uuidRelations     UUIDRelation[]
   productCategories ProductCategory[]
@@ -182,21 +185,21 @@ model Metadata {
 }
 
 model UUIDRelation {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId()
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
   metadataId String   @db.ObjectId
   foreignKey String
-  createdAt  DateTime
+  createdAt  DateTime @default(now())
   metadata   Metadata @relation(fields: [metadataId], references: [id], onDelete: Cascade)
 
   @@map("uuid_relations")
 }
 
 model ProductCategory {
-  id                     String                 @id @default(auto()) @map("_id") @db.ObjectId()
+  id                     String                 @id @default(auto()) @map("_id") @db.ObjectId
   metadataId             String                 @db.ObjectId
   categoryType           String // primitive or non-primitive
   name                   String
-  createdAt              DateTime
+  createdAt              DateTime               @default(now())
   metadata               Metadata               @relation(fields: [metadataId], references: [id], onDelete: Cascade)
   primitiveCategories    PrimitiveCategory[]
   nonPrimitiveCategories NonPrimitiveCategory[]
@@ -209,33 +212,33 @@ model ProductCategory {
 }
 
 model PrimitiveCategory {
-  id                String          @id @default(auto()) @map("_id") @db.ObjectId()
+  id                String          @id @default(auto()) @map("_id") @db.ObjectId
   productCategoryId String          @db.ObjectId
   name              String
   apiIntegrationId  String?         @unique @db.ObjectId
   productCategory   ProductCategory @relation(fields: [productCategoryId], references: [id], onDelete: Cascade)
-  apiIntegration    APIIntegration? @relation(fields: [apiIntegrationId], references: [id], onDelete: NoAction)
+  apiIntegration    APIIntegration? @relation(fields: [apiIntegrationId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("primitive_categories")
 }
 
 model NonPrimitiveCategory {
-  id                String          @id @default(auto()) @map("_id") @db.ObjectId()
+  id                String          @id @default(auto()) @map("_id") @db.ObjectId
   productCategoryId String          @db.ObjectId
   name              String
   apiIntegrationId  String?         @unique @db.ObjectId
   productCategory   ProductCategory @relation(fields: [productCategoryId], references: [id], onDelete: Cascade)
-  apiIntegration    APIIntegration? @relation(fields: [apiIntegrationId], references: [id], onDelete: NoAction)
+  apiIntegration    APIIntegration? @relation(fields: [apiIntegrationId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("non_primitive_categories")
 }
 
 model FoodPipeline {
-  id                    String                 @id @default(auto()) @map("_id") @db.ObjectId()
+  id                    String                 @id @default(auto()) @map("_id") @db.ObjectId
   productCategoryId     String                 @db.ObjectId
   apiIntegrationId      String?                @unique @db.ObjectId
   productCategory       ProductCategory        @relation(fields: [productCategoryId], references: [id], onDelete: Cascade)
-  apiIntegration        APIIntegration?        @relation(fields: [apiIntegrationId], references: [id], onDelete: NoAction)
+  apiIntegration        APIIntegration?        @relation(fields: [apiIntegrationId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   searchResults         SearchResult[]
   locationPricingLayers LocationPricingLayer[]
   locations             Location[]
@@ -246,11 +249,11 @@ model FoodPipeline {
 }
 
 model ClothesPipeline {
-  id                     String                  @id @default(auto()) @map("_id") @db.ObjectId()
+  id                     String                  @id @default(auto()) @map("_id") @db.ObjectId
   productCategoryId      String                  @db.ObjectId
   apiIntegrationId       String?                 @unique @db.ObjectId
   productCategory        ProductCategory         @relation(fields: [productCategoryId], references: [id], onDelete: Cascade)
-  apiIntegration         APIIntegration?         @relation(fields: [apiIntegrationId], references: [id], onDelete: NoAction)
+  apiIntegration         APIIntegration?         @relation(fields: [apiIntegrationId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   searchResults          SearchResult[]
   locationPricingLayers  LocationPricingLayer[]
   locations              Location[]
@@ -261,11 +264,11 @@ model ClothesPipeline {
 }
 
 model DrugsPipeline {
-  id                    String                 @id @default(auto()) @map("_id") @db.ObjectId()
+  id                    String                 @id @default(auto()) @map("_id") @db.ObjectId
   productCategoryId     String                 @db.ObjectId
   apiIntegrationId      String?                @unique @db.ObjectId
   productCategory       ProductCategory        @relation(fields: [productCategoryId], references: [id], onDelete: Cascade)
-  apiIntegration        APIIntegration?        @relation(fields: [apiIntegrationId], references: [id], onDelete: NoAction)
+  apiIntegration        APIIntegration?        @relation(fields: [apiIntegrationId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   searchResults         SearchResult[]
   locationPricingLayers LocationPricingLayer[]
   locations             Location[]
@@ -276,11 +279,11 @@ model DrugsPipeline {
 }
 
 model TechnologyPipeline {
-  id                        String                     @id @default(auto()) @map("_id") @db.ObjectId()
+  id                        String                     @id @default(auto()) @map("_id") @db.ObjectId
   productCategoryId         String                     @db.ObjectId
   apiIntegrationId          String?                    @unique @db.ObjectId
   productCategory           ProductCategory            @relation(fields: [productCategoryId], references: [id], onDelete: Cascade)
-  apiIntegration            APIIntegration?            @relation(fields: [apiIntegrationId], references: [id], onDelete: NoAction)
+  apiIntegration            APIIntegration?            @relation(fields: [apiIntegrationId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   searchResults             SearchResult[]
   locationPricingLayers     LocationPricingLayer[]
   locations                 Location[]
@@ -291,9 +294,9 @@ model TechnologyPipeline {
 }
 
 model LocationPricingLayer {
-  id                   String              @id @default(auto()) @map("_id") @db.ObjectId()
-  pipelineType         String // Could be a reference to pipeline id or type
-  createdAt            DateTime
+  id                   String              @id @default(auto()) @map("_id") @db.ObjectId
+  pipelineType         String
+  createdAt            DateTime            @default(now())
   foodPipelineId       String?             @db.ObjectId
   clothesPipelineId    String?             @db.ObjectId
   drugsPipelineId      String?             @db.ObjectId
@@ -307,45 +310,48 @@ model LocationPricingLayer {
 }
 
 model SearchResult {
-  id                  String               @id @default(auto()) @map("_id") @db.ObjectId()
-  pipelineId          String               @db.ObjectId
-  expandedData        String
-  createdAt           DateTime
-  expandedFKRelations ExpandedFKRelation[]
-  outputInfos         OutputInfo[]
-  foodPipeline        FoodPipeline?        @relation(fields: [pipelineId], references: [id])
-  clothesPipeline     ClothesPipeline?     @relation(fields: [pipelineId], references: [id])
-  drugsPipeline       DrugsPipeline?       @relation(fields: [pipelineId], references: [id])
-  technologyPipeline  TechnologyPipeline?  @relation(fields: [pipelineId], references: [id])
+  id                   String               @id @default(auto()) @map("_id") @db.ObjectId
+  expandedData         String
+  createdAt            DateTime             @default(now())
+  foodPipelineId       String?              @db.ObjectId
+  clothesPipelineId    String?              @db.ObjectId
+  drugsPipelineId      String?              @db.ObjectId
+  technologyPipelineId String?              @db.ObjectId
+  expandedFKRelations  ExpandedFKRelation[]
+  outputInfos          OutputInfo[]
+  foodPipeline         FoodPipeline?        @relation(fields: [foodPipelineId], references: [id])
+  clothesPipeline      ClothesPipeline?     @relation(fields: [clothesPipelineId], references: [id])
+  drugsPipeline        DrugsPipeline?       @relation(fields: [drugsPipelineId], references: [id])
+  technologyPipeline   TechnologyPipeline?  @relation(fields: [technologyPipelineId], references: [id])
 
   @@map("search_results")
 }
 
 model ExpandedFKRelation {
-  id             String       @id @default(auto()) @map("_id") @db.ObjectId()
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
   searchResultId String       @db.ObjectId
   foreignKey     String
-  createdAt      DateTime
+  createdAt      DateTime     @default(now())
   searchResult   SearchResult @relation(fields: [searchResultId], references: [id], onDelete: Cascade)
 
   @@map("expanded_fk_relations")
 }
 
 model OutputInfo {
-  id             String       @id @default(auto()) @map("_id") @db.ObjectId()
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
   searchResultId String       @db.ObjectId
   info           String
-  createdAt      DateTime
+  createdAt      DateTime     @default(now())
   searchResult   SearchResult @relation(fields: [searchResultId], references: [id], onDelete: Cascade)
 
   @@map("output_infos")
 }
 
 model UserChoice {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId()
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
   userId      String    @db.ObjectId
   topResultId String    @db.ObjectId
-  selectedAt  DateTime
+  selectedAt  DateTime  @default(now())
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   topResult   TopResult @relation(fields: [topResultId], references: [id], onDelete: Cascade)
 
@@ -353,11 +359,9 @@ model UserChoice {
 }
 
 model APIIntegration {
-  id                     String                @id @default(auto()) @map("_id") @db.ObjectId()
+  id                     String                @id @default(auto()) @map("_id") @db.ObjectId
   type                   String // Google Maps, YouTube, Custom Search, etc.
   details                String
-  primitiveCategoryId    String?               @db.ObjectId
-  nonPrimitiveCategoryId String?               @db.ObjectId
   primitiveCategory      PrimitiveCategory?
   nonPrimitiveCategory   NonPrimitiveCategory?
   FoodPipeline           FoodPipeline?
@@ -369,36 +373,42 @@ model APIIntegration {
 }
 
 model Location {
-  id                 String              @id @default(auto()) @map("_id") @db.ObjectId()
-  pipelineId         String              @db.ObjectId
-  nearestLocation    String
-  createdAt          DateTime
-  foodPipeline       FoodPipeline?       @relation(fields: [pipelineId], references: [id])
-  clothesPipeline    ClothesPipeline?    @relation(fields: [pipelineId], references: [id])
-  drugsPipeline      DrugsPipeline?      @relation(fields: [pipelineId], references: [id])
-  technologyPipeline TechnologyPipeline? @relation(fields: [pipelineId], references: [id])
+  id                   String              @id @default(auto()) @map("_id") @db.ObjectId
+  nearestLocation      String
+  createdAt            DateTime            @default(now())
+  foodPipelineId       String?             @db.ObjectId
+  clothesPipelineId    String?             @db.ObjectId
+  drugsPipelineId      String?             @db.ObjectId
+  technologyPipelineId String?             @db.ObjectId
+  foodPipeline         FoodPipeline?       @relation(fields: [foodPipelineId], references: [id])
+  clothesPipeline      ClothesPipeline?    @relation(fields: [clothesPipelineId], references: [id])
+  drugsPipeline        DrugsPipeline?      @relation(fields: [drugsPipelineId], references: [id])
+  technologyPipeline   TechnologyPipeline? @relation(fields: [technologyPipelineId], references: [id])
 
   @@map("locations")
 }
 
 model Pricing {
-  id                 String              @id @default(auto()) @map("_id") @db.ObjectId()
-  pipelineId         String              @db.ObjectId
-  priceChangeHistory String
-  createdAt          DateTime
-  foodPipeline       FoodPipeline?       @relation(fields: [pipelineId], references: [id])
-  clothesPipeline    ClothesPipeline?    @relation(fields: [pipelineId], references: [id])
-  drugsPipeline      DrugsPipeline?      @relation(fields: [pipelineId], references: [id])
-  technologyPipeline TechnologyPipeline? @relation(fields: [pipelineId], references: [id])
+  id                   String              @id @default(auto()) @map("_id") @db.ObjectId
+  priceChangeHistory   String
+  createdAt            DateTime            @default(now())
+  foodPipelineId       String?             @db.ObjectId
+  clothesPipelineId    String?             @db.ObjectId
+  drugsPipelineId      String?             @db.ObjectId
+  technologyPipelineId String?             @db.ObjectId
+  foodPipeline         FoodPipeline?       @relation(fields: [foodPipelineId], references: [id])
+  clothesPipeline      ClothesPipeline?    @relation(fields: [clothesPipelineId], references: [id])
+  drugsPipeline        DrugsPipeline?      @relation(fields: [drugsPipelineId], references: [id])
+  technologyPipeline   TechnologyPipeline? @relation(fields: [technologyPipelineId], references: [id])
 
   @@map("pricings")
 }
 
 model UserTopResult {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId()
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
   userId      String    @db.ObjectId
   topResultId String    @db.ObjectId
-  selectedAt  DateTime
+  selectedAt  DateTime  @default(now())
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   topResult   TopResult @relation(fields: [topResultId], references: [id], onDelete: Cascade)
 
@@ -406,7 +416,7 @@ model UserTopResult {
 }
 
 model FoodPipelineDetails {
-  id                 String       @id @default(auto()) @map("_id") @db.ObjectId()
+  id                 String       @id @default(auto()) @map("_id") @db.ObjectId
   foodPipelineId     String       @unique @db.ObjectId
   nearestLocation    String
   nutrientInfo       String
@@ -417,7 +427,7 @@ model FoodPipelineDetails {
 }
 
 model ClothesPipelineDetails {
-  id                 String          @id @default(auto()) @map("_id") @db.ObjectId()
+  id                 String          @id @default(auto()) @map("_id") @db.ObjectId
   clothesPipelineId  String          @unique @db.ObjectId
   nearestLocation    String
   productReviews     String
@@ -428,7 +438,7 @@ model ClothesPipelineDetails {
 }
 
 model DrugsPipelineDetails {
-  id                 String        @id @default(auto()) @map("_id") @db.ObjectId()
+  id                 String        @id @default(auto()) @map("_id") @db.ObjectId
   drugsPipelineId    String        @unique @db.ObjectId
   nearestLocation    String
   priceChangeHistory String
@@ -438,7 +448,7 @@ model DrugsPipelineDetails {
 }
 
 model TechnologyPipelineDetails {
-  id                   String             @id @default(auto()) @map("_id") @db.ObjectId()
+  id                   String             @id @default(auto()) @map("_id") @db.ObjectId
   technologyPipelineId String             @unique @db.ObjectId
   designatedTask       String
   technologyPipeline   TechnologyPipeline @relation(fields: [technologyPipelineId], references: [id], onDelete: Cascade)
