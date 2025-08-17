@@ -1,0 +1,43 @@
+{
+  "name": "@apps/backend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "bunx biome lint --write || true",
+    "check": "bunx biome check --write || true",
+    "format": "bunx biome format --write || true",
+    "dev": "bun --watch src/index.ts",
+    "build": "bun run lint && bun run format && bun build src/index.ts --outdir=build --target=bun --minify && bun run sentry:sourcemaps",
+    "start": "bun run build/index.js",
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org womb0comb0 --project product-decoder-backend ./build && sentry-cli sourcemaps upload --org womb0comb0 --project 
+product-decoder-backend ./build"
+  },
+  "dependencies": {
+    "@packages/db": "workspace:*",
+    "@elysiajs/bearer": "^1.3.0",
+    "@elysiajs/cors": "^1.3.3",
+    "@elysiajs/jwt": "^1.3.1",
+    "@elysiajs/opentelemetry": "^1.3.0",
+    "@elysiajs/server-timing": "^1.3.0",
+    "@elysiajs/swagger": "^1.3.0",
+    "@opentelemetry/resources": "^2.0.1",
+    "@sentry/cli": "^2.50.2",
+    "@types/bun": "^1.2.20",
+    "@types/jsonwebtoken": "^9.0.10",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "cryptr": "^6.3.0",
+    "dayjs": "^1.11.13",
+    "elysia": "latest",
+    "elysia-ip": "^1.0.10",
+    "elysia-rate-limit": "^4.4.0",
+    "elysiajs-helmet": "^1.0.2",
+    "logixlysia": "^5.1.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.1.1",
+    "bun-types": "latest",
+    "prisma": "^6.11.1"
+  }
+}
+'
