@@ -48,3 +48,5 @@ build
 .env
 # Sentry Config File
 .sentryclirc
+uploads/*
+uploads/*

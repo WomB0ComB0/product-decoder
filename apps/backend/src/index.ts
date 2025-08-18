@@ -1,33 +1,16 @@
-import { cors } from '@elysiajs/cors';
-import { serverTiming } from '@elysiajs/server-timing';
-import { swagger } from '@elysiajs/swagger';
-import { Elysia } from 'elysia';
-import env from '#helpers/env';
-import authRoutes from '#modules/auth/routes';
-import meRoutes from '#modules/me/routes';
-import userRoutes from '#modules/user/routes';
+import { Elysia } from 'elysia'
+import { cors } from '@elysiajs/cors'
+import { staticPlugin } from '@elysiajs/static'
+import { UPLOAD_DIR } from './config/paths'
+import { uploadRoutes } from './routes/upload'
+import { filesRoutes } from './routes/files'
 
-console.time('⌛ Startup Time');
-
-new Elysia()
-  .use(swagger())
-  .use(serverTiming())
+const app = new Elysia()
   .use(cors())
-  .group('/api', (app) =>
-    app
-      .use(userRoutes)
-      .use(authRoutes)
-      .use(meRoutes)
-      .onError(({ error, ...ctx }) => {
-        console.log({ ctx });
-      }),
-  )
-  .listen(env.SERVER_PORT, (server) => {
-    console.timeEnd('⌛ Startup Time');
-    console.log(`🌱 NODE_ENV: ${env.NODE_ENV || 'development'}`);
-    console.log(`🍙 Bun Version: ${Bun.version}`);
-    console.log(`🦊 Elysia.js Version: ${require('elysia/package.json').version}`);
-    console.log(`🗃️  Prisma Version: ${require('@prisma/client/package.json').version}`);
-    console.log(`🚀 Server is running at ${server.url}`);
-    console.log('--------------------------------------------------');
-  });
+  .use(staticPlugin({ assets: UPLOAD_DIR, prefix: '/uploads' }))
+  .use(filesRoutes)
+  .use(uploadRoutes)
+  .get('/health', () => ({ ok: true }))
+  .listen(process.env.SERVER_PORT ? Number(process.env.SERVER_PORT) : 3001)
+
+console.log(`Backend listening on http://localhost:${app.server?.port}`)
