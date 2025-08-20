@@ -16,18 +16,12 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "auth:generate": "bunx @better-auth/cli@latest generate --config ./src/lib/auth/index.ts --y --output ./src/lib/db/schema/auth.schema.ts && bunx prettier --write ./src/lib/db/schema/auth.schema.ts",
-    "auth:secret": "bunx @better-auth/cli@latest secret",
-    "build": "bun run next build",
-    "check": "bun run format && bun run lint && bun run check-types",
-    "check-types": "bunx tsc --noEmit",
-    "deps": "bunx taze@latest major -Ilw",
-    "dev": "bun run next dev --port 3000",
-    "format": "bunx @biomejs/biome format --write . || true",
-    "lint": "bunx @biomejs/biome lint . || true",
-    "start": "bun run next start",
-    "ui": "bunx shadcn@latest"
-  },
+  "dev": "next dev -p 3000",
+  "build": "next build",
+  "start": "next start -p 3000",
+  "lint": "next lint"
+},
+
   "browserslist": {
     "development": [
       "last 1 chrome version",

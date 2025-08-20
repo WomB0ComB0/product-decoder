@@ -1,236 +1,53 @@
 "use client";
 
-import Image from "next/image";
+import * as React from "react";
 import Link from "next/link";
-import { ArrowUpRight, PlayCircle } from "lucide-react";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { UserIcon } from "@/components/ui/icons";
+import ImageUploader from "@/components/ImageUploader"; // ✅ import your component
 
-export default function Home() {
-  const [activeCard, setActiveCard] = useState("nutrition_facts");
-  // const [hoverCard, setHoverCard] = useState<string | null>(null);
-
+export default function UploadPage() {
   return (
-    <div className="min-h-screen bg-[#FFF6E6] text-gray-900">
-      {/* NAVIGATION HEADER */}
-      <header className="py-10">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6">
-          {/* Logo */}
-          <div>
-            <Image
-              src="/logo.png"
-              alt="Product Decoder Logo"
-              width={181}
-              height={85}
-              priority
-            />
-          </div>
+    <main className="min-h-screen bg-[#FFF6E6] text-black">
+      {/* Top bar */}
+      <div className="mx-auto w-full max-w-[1280px] px-6 pt-6">
+        <header className="mb-8 flex items-center justify-between">
+          <h1 className="text-[28px] font-semibold leading-[1] text-[#5865F2]">
+            Product<br />Decoder
+          </h1>
 
-          {/* Navigation Links */}
-          <nav className="flex items-center gap-12 text-xl font-semibold">
-            <Link href="/" className="text-[#D26B36]">
-              Home
-            </Link>
-            <Link href="#try" className="hover:text-[#D26B36]">
-              Try out
-            </Link>
-            <Link href="/login" className="hover:text-[#D26B36]">
-              Log In
-            </Link>
-          </nav>
-        </div>
-      </header>
+          <nav className="flex items-center gap-8 text-[22px] font-semibold">
+            <Link href="/upload" className="text-[#CE673A]">Image upload</Link>
+            <Link href="#" className="text-black">Saved searches</Link>
+            <Link href="/" className="text-black">Home</Link>
 
-      {/* HERO SECTION */}
-      <main className="px-6 mb-24">
-        <div className="mx-auto max-w-7xl flex flex-col-reverse lg:flex-row items-center justify-between gap-16">
-          {/* Left side: Headline, Description, Buttons */}
-          <div className="max-w-xl">
-            <p className="text-lg leading-relaxed text-gray-700">
-              Upload any product photo and instantly get detailed information, pricing,
-              nutrition facts, and where to buy. Powered by advanced visual recognition
-              technology.
-            </p>
+            <div className="ml-2 flex items-center gap-3">
+              <div className="flex h-[60px] w-[60px] items-center justify-center rounded-full bg-[#FFD671]">
+                <UserIcon className="h-8 w-8" />
+              </div>
 
-            <div className="mt-10 flex items-center gap-10">
-              <Link
-                href="#try"
-                className="bg-[#5D5FEF] text-white font-semibold px-6 py-3 rounded-md shadow-md flex items-center gap-2"
-              >
-                <ArrowUpRight className="w-4 h-4" />
-                Try Product Decoder
-              </Link>
-
-              <Button variant={`ghost`} className="text-gray-700 font-medium flex items-center gap-2">
-                <PlayCircle className="w-5 h-5" />
-                Watch Demo
-              </Button>
-            </div>
-          </div>
-
-          {/* Right side: Trading card */}
-          <div className="bg-[#FFF6E6] p-6 rounded-2xl shadow-[0px_20px_50px_-12px_rgba(0,0,0,0.25)] w-full max-w-sm">
-            <div className="rounded-xl overflow-hidden">
-              <Image
-                src="/ollie.png"
-                alt="Ollie the Golden Retriever"
-                width={500}
-                height={500}
-                className="rounded-xl"
-              />
-            </div>
-
-            <div className="mt-4 text-sm">
-              <p>
-                <strong className="text-[#5D5FEF]">Name:</strong>{" "}
-                <span className="text-[#6366F1]">Ollie the Golden Retriever</span>
-              </p>
-              <p>
-                <strong className="text-[#5D5FEF]">Traits:</strong>{" "}
-                <span className="text-[#6366F1]">Smart, Cute, Will Behave</span>
-              </p>
-            </div>
-
-            <div className="mt-4 flex gap-2">
-              <span className="bg-[#5D5FEF] text-white px-2 py-1 text-xs rounded-md">
-                $FREE
-              </span>
-              <span className="bg-green-600 text-white px-2 py-1 text-xs rounded-md">
-                In Stock
-              </span>
-            </div>
-          </div>
-        </div>
-      </main>
-
-      {/* HOW IT WORKS SECTION */}
-      <section className="bg-[#5A5CF0] py-20 px-6 container mx-auto rounded-xl">
-        <div className="mx-auto max-w-7xl text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-16">
-            How it works
-          </h2>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 text-white">
-            {/* Image Upload */}
-            <div className="flex flex-col items-center text-center">
-              <img
-                src="/illustrations/htwdog1.png"
-                alt="Image Upload"
-                className="h-24 mb-6"
-              />
-              <h3 className="font-semibold text-lg mb-2">Image Upload</h3>
-              <p className="text-sm text-[#E2E2FF] max-w-xs">
-                Drag and drop or click to upload your product photo
-              </p>
-            </div>
-
-            {/* Visual Search */}
-            <div className="flex flex-col items-center text-center">
-              <img
-                src="/illustrations/htwdog2.png"
-                alt="Visual Search"
-                className="h-24 mb-6"
-              />
-              <h3 className="font-semibold text-lg mb-2">Visual Search</h3>
-              <p className="text-sm text-[#E2E2FF] max-w-xs">
-                AI analyzes your image to find matching products
-              </p>
-            </div>
-
-            {/* User Selection */}
-            <div className="flex flex-col items-center text-center">
-              <img
-                src="/illustrations/htwdog3.png"
-                alt="User Selection"
-                className="h-24 mb-6"
-              />
-              <h3 className="font-semibold text-lg mb-2">User Selection</h3>
-              <p className="text-sm text-[#E2E2FF] max-w-xs">
-                Choose the best match from our curated results
-              </p>
-            </div>
-
-            {/* Metadata Extraction */}
-            <div className="flex flex-col items-center text-center">
-              <img
-                src="/illustrations/htwdog4.png"
-                alt="Metadata Extraction"
-                className="h-24 mb-6"
-              />
-              <h3 className="font-semibold text-lg mb-2">Metadata Extraction</h3>
-              <p className="text-sm text-[#E2E2FF] max-w-xs">
-                Extract relevant product data based on category
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* POWERFUL FEATURES SECTION */}
-      <section className="bg-[#FFF6E6] pt-32 pb-15 container mx-auto">
-        <div className="mx-auto max-w-7xl text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#5D5FEF] mb-16">
-            Powerful features
-          </h2>
-
-          <div className="relative z-10 flex justify-center items-end gap-6 flex-wrap">
-            {[
-              { key: "nutrition_facts", label: "Nutrition Facts", color: "#5D5FEF" },
-              { key: "price_history", label: "Price History", color: "#FDDC8B" },
-              { key: "store_locations", label: "Store Locations", color: "#C25C2C" },
-            ].map(({ key, label, color }) => (
               <button
-                key={key}
-                onClick={() => setActiveCard(key)}
-                className={`rounded-t-xl px-6 py-3 font-semibold text-lg transition-all duration-300 focus:outline-none ${
-                  activeCard === key
-                    ? `text-white z-20 -mb-1`
-                    : `opacity-80 z-10`
-                }`}
-                style={{
-                  backgroundColor: activeCard === key ? color : "#EEE",
-                  color: activeCard === key ? "white" : "#333",
-                  transform: activeCard === key ? "scale(1.05)" : "scale(1)",
-                }}
+                type="button"
+                className="h-11 w-[100px] rounded-[10px] bg-[#FFD671] text-[15px] font-semibold text-[#5865F2]"
               >
-                {label}
+                Log Out
               </button>
-            ))}
-          </div>
-        </div>
+            </div>
+          </nav>
+        </header>
+      </div>
 
-        {/* Bottom container that expands to full width and height */}
+      {/* Uploader section */}
+      <section className="mx-auto w-full max-w-[1280px] px-6">
         <div
-          className="mt-0 pt-20 pb-24 text-white text-center text-lg leading-relaxed px-6 rounded-xl"
-          style={{
-            backgroundColor:
-              activeCard === "nutrition_facts"
-                ? "#5D5FEF"
-                : activeCard === "price_history"
-                  ? "#FDDC8B"
-                  : "#C25C2C",
-          }}
+          className="
+            mx-auto rounded-[20px] bg-[#5865F2] px-5 py-10
+          "
+          style={{ width: "1105px", height: "545px" }}
         >
-          {activeCard === "nutrition_facts" && (
-            <p className="text-2xl font-medium">
-              Get detailed nutritional information for food products including calories,
-              ingredients, and allergens.
-            </p>
-          )}
-          {activeCard === "price_history" && (
-            <p className="text-2xl font-medium">
-              Track price changes over time for electronics and fashion items to find the
-              best deals.
-            </p>
-          )}
-          {activeCard === "store_locations" && (
-            <p className="text-2xl font-medium">
-              Find nearby stores where you can purchase the product with real-time
-              availability.
-            </p>
-          )}
+          {/* Here we drop in our reusable component */}
+          <ImageUploader className="mx-auto flex h-[321px] w-[660px] flex-col items-center justify-center rounded-[12px] border-2 border-dashed" />
         </div>
       </section>
-    </div>
+    </main>
   );
 }
