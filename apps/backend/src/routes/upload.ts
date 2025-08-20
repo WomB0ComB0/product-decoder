@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto'
 import path from 'node:path'
 import fs from 'node:fs/promises'
 
-const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(process.cwd(), 'uploads')
+import { UPLOAD_DIR } from '../config/paths'
 
 async function ensureDir(p: string) {
   await fs.mkdir(p, { recursive: true })
