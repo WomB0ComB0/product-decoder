@@ -13,7 +13,7 @@ export const uploadRoutes = new Elysia({ prefix: '/api' })
   .post(
     '/upload',
     async ({ body, request, set }) => {
-      const file = (body as any).image as File
+      const file = body.image;
       if (!file) {
         set.status = 400
         return { error: 'No file field "image" found.' }
