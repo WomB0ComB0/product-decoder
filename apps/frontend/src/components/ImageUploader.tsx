@@ -82,7 +82,7 @@ export default function ImageUploader({
 
       // 👇 Explicit response type so TS knows about `url`
       type UploadResp = { url?: string; [k: string]: unknown };
-      const data = (await res.json().catch(() => ({}))) as UploadResp;
+      const data = (await res.json()) as UploadResp;
 
       setUploadedUrl(data.url ?? "");
       setStatus("success");
