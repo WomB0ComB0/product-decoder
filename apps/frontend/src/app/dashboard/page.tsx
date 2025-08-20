@@ -20,7 +20,7 @@ export default function DashboardPage() {
         <div className="flex items-center gap-4">
           <button className="px-5 py-2 rounded-xl bg-[#f8c83b] shadow text-black font-semibold">Log Out</button>
           <div className="w-12 h-12 rounded-full bg-[#f1e7ff] flex items-center justify-center">
-            <span className="text-2xl">👤</span>
+            <UserIcon className="w-6 h-6" />
           </div>
         </div>
       </header>
