@@ -446,7 +446,7 @@ async function main(): Promise<void> {
   // Create Search Results
   const searchResult1 = await prisma.searchResult.create({
     data: {
-      pipelineId: foodPipeline.id,
+      foodPipelineId: foodPipeline.id,
       expandedData: JSON.stringify({
         products: [
           { name: 'Organic Apples', price: 3.99, store: 'Whole Foods' },
@@ -461,7 +461,7 @@ async function main(): Promise<void> {
 
   const searchResult2 = await prisma.searchResult.create({
     data: {
-      pipelineId: techPipeline.id,
+      technologyPipelineId: techPipeline.id,
       expandedData: JSON.stringify({
         products: [
           { name: 'iPhone 15', price: 799, store: 'Apple Store' },
@@ -511,7 +511,7 @@ async function main(): Promise<void> {
   // Create Locations
   await prisma.location.create({
     data: {
-      pipelineId: foodPipeline.id,
+      foodPipelineId: foodPipeline.id,
       nearestLocation: 'Whole Foods Market, 1234 Main St, New York, NY 10001',
       createdAt: new Date(),
     },
@@ -519,7 +519,7 @@ async function main(): Promise<void> {
 
   await prisma.location.create({
     data: {
-      pipelineId: techPipeline.id,
+      technologyPipelineId: techPipeline.id,
       nearestLocation: 'Best Buy, 5678 Tech Ave, New York, NY 10002',
       createdAt: new Date(),
     },
@@ -528,7 +528,7 @@ async function main(): Promise<void> {
   // Create Pricings
   await prisma.pricing.create({
     data: {
-      pipelineId: foodPipeline.id,
+      foodPipelineId: foodPipeline.id,
       priceChangeHistory: JSON.stringify({
         product: 'Organic Apples',
         history: [
@@ -543,7 +543,7 @@ async function main(): Promise<void> {
 
   await prisma.pricing.create({
     data: {
-      pipelineId: techPipeline.id,
+      technologyPipelineId: techPipeline.id,
       priceChangeHistory: JSON.stringify({
         product: 'iPhone 15',
         history: [

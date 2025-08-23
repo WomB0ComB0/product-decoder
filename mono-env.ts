@@ -15,7 +15,7 @@
  */
 
 import { readdir, readFile, writeFile } from 'node:fs/promises';
-import { join, dirname } from 'node:path';
+import { join } from 'node:path';
 import { existsSync } from 'node:fs';
 
 interface TurboConfig {
@@ -23,17 +23,17 @@ interface TurboConfig {
   tasks?: {
     [task: string]: {
       env?: string[];
-      [key: string]: any;
+      [key: string]: unknown;
     };
   };
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 /**
  * Recursively finds all .env.example files in the project
  */
 async function findEnvExampleFiles(dir: string = process.cwd(), depth: number = 0): Promise<string[]> {
-  if (depth > 10) return []; // Prevent infinite recursion
+  if (depth > 10) return [];
   
   const files: string[] = [];
   
@@ -71,7 +71,6 @@ async function parseEnvFile(filePath: string): Promise<string[]> {
     for (const line of lines) {
       const trimmed = line.trim();
       
-      // Skip comments and empty lines
       if (!trimmed || trimmed.startsWith('#')) {
         continue;
       }

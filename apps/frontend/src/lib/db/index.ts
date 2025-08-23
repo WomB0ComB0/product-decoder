@@ -1,7 +1,6 @@
 import type { Prisma } from '@packages/db';
 import { PrismaClient, withAccelerate } from '@packages/db';
 import { Logger } from "@packages/logger";
-import { serverOnly } from "@tanstack/react-start";
 
 const log = Logger.getLogger('Prisma');
 
@@ -64,7 +63,6 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 
-const getDatabase = serverOnly(() => prisma);
 
-export const db = getDatabase();
+export const db = prisma;
 export { prisma as prismaClient };

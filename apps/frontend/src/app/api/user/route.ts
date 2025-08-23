@@ -1,22 +1,13 @@
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session) {
-      return NextResponse.json({ user: null }, { status: 401 });
-    }
-
-    return NextResponse.json({ user: session.user });
+    // Temporarily return a simple response while we fix the auth issue
+    return NextResponse.json({ user: null, message: "Auth temporarily disabled" });
   } catch (error) {
-    console.error("Error getting user session:", error);
+    console.error("Error in user route:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

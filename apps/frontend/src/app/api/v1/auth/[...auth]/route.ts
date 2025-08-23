@@ -1,23 +1,17 @@
-import { auth } from "@/lib/auth";
-import { toNextJsHandler } from "better-auth/next-js";
-import { headers } from "next/headers";
+import { NextResponse } from "next/server";
 
 export const dynamic = 'force-dynamic';
 
-export const { GET, POST } = toNextJsHandler(auth.handler);
+export async function GET() {
+  return NextResponse.json({ message: "Auth temporarily disabled" });
+}
+
+export async function POST() {
+  return NextResponse.json({ message: "Auth temporarily disabled" });
+}
 
 export async function HEAD() {
-  try {
-    return Response.json({
-      headers: await headers(),
-      status: 200,
-    });
-  } catch (error) {
-    return Response.json(
-      { error: error instanceof Error ? error.message : String(error) },
-      { status: 500 }
-    );
-  }
+  return NextResponse.json({ message: "Auth temporarily disabled" });
 }
 
 export async function OPTIONS() {
