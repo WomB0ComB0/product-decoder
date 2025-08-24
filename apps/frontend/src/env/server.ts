@@ -5,7 +5,7 @@ export const env = createEnv({
   server: {
     DATABASE_URL: z.string(),
     BASE_URL: z.string().url().default("http://localhost:3000"),
-    
+
     // Clerk authentication
     CLERK_SECRET_KEY: z.string().min(1),
     CLERK_WEBHOOK_SECRET: z.string().optional(),

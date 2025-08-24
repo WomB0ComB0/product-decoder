@@ -2,12 +2,21 @@
   "$schema": "https://turbo.build/schema.json",
   "tasks": {
     "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": ["dist/**", "build/**"],
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env*"
+      ],
+      "outputs": [
+        "dist/**",
+        "build/**"
+      ],
       "env": [
         "BASE_URL",
         "BETTER_AUTH_SECRET",
+        "CLERK_SECRET_KEY",
         "DATABASE_URL",
         "GEMINI_API_KEY",
         "GITHUB_CLIENT_ID",
@@ -16,6 +25,10 @@
         "GOOGLE_CLIENT_SECRET",
         "JWT_EXPIRED",
         "JWT_SECRETS",
+        "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
+        "NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL",
+        "NEXT_PUBLIC_CLERK_SIGN_IN_URL",
+        "NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL",
         "PRISMA_SCHEMA_PATH",
         "SENTRY_AUTH_TOKEN",
         "SENTRY_ORG",
@@ -24,20 +37,29 @@
       ]
     },
     "test": {
-      "dependsOn": ["^build"]
+      "dependsOn": [
+        "^build"
+      ]
     },
     "lint": {
-      "dependsOn": ["^build"]
+      "dependsOn": [
+        "^build"
+      ]
     },
     "types": {
-      "dependsOn": ["^build"]
+      "dependsOn": [
+        "^build"
+      ]
     },
     "dev": {
-      "dependsOn": ["^build"],
+      "dependsOn": [
+        "^build"
+      ],
       "persistent": true,
       "env": [
         "BASE_URL",
         "BETTER_AUTH_SECRET",
+        "CLERK_SECRET_KEY",
         "DATABASE_URL",
         "GEMINI_API_KEY",
         "GITHUB_CLIENT_ID",
@@ -46,6 +68,10 @@
         "GOOGLE_CLIENT_SECRET",
         "JWT_EXPIRED",
         "JWT_SECRETS",
+        "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
+        "NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL",
+        "NEXT_PUBLIC_CLERK_SIGN_IN_URL",
+        "NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL",
         "PRISMA_SCHEMA_PATH",
         "SENTRY_AUTH_TOKEN",
         "SENTRY_ORG",
@@ -60,6 +86,7 @@
       "env": [
         "BASE_URL",
         "BETTER_AUTH_SECRET",
+        "CLERK_SECRET_KEY",
         "DATABASE_URL",
         "GEMINI_API_KEY",
         "GITHUB_CLIENT_ID",
@@ -68,6 +95,10 @@
         "GOOGLE_CLIENT_SECRET",
         "JWT_EXPIRED",
         "JWT_SECRETS",
+        "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
+        "NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL",
+        "NEXT_PUBLIC_CLERK_SIGN_IN_URL",
+        "NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL",
         "PRISMA_SCHEMA_PATH",
         "SENTRY_AUTH_TOKEN",
         "SENTRY_ORG",
