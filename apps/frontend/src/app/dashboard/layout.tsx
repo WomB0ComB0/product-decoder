@@ -3,16 +3,16 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { useUser } from "@/lib/auth/functions/get-user";
+import { useUser } from "@clerk/nextjs";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { data: user, isLoading } = useUser();
+  const { isSignedIn, user, isLoaded } = useUser();
 
-  if (isLoading) {
+  if (!isLoaded) {
     return (
       <div className="flex min-h-svh flex-col items-center justify-center gap-10 p-2">
         <div className="flex flex-col items-center gap-4">
@@ -22,8 +22,8 @@ export default function DashboardLayout({
     );
   }
 
-  if (!user) {
-    redirect("/login?redirectUrl=/dashboard");
+  if (!isSignedIn || !user) {
+    redirect("/login/");
   }
 
   return (

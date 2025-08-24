@@ -21,6 +21,7 @@
     "update:sec": "bun ./bin/update-security-md.js"
   },
   "dependencies": {
+    "@clerk/nextjs": "^6.31.4",
     "@google/genai": "^1.13.0",
     "@tanstack/react-start": "^1.131.8",
     "better-auth": "^1.3.5",

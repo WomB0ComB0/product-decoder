@@ -1,41 +1,29 @@
-import { betterAuth } from "better-auth";
-import { prismaAdapter } from "better-auth/adapters/prisma";
-import { nextCookies } from "better-auth/next-js";
+// Clerk authentication configuration
+// This file exports Clerk utilities and configurations
 
-import { env } from "@/env/server";
-import { db } from "@/lib/db";
+import { currentUser } from "@clerk/nextjs/server";
 
-export const auth = betterAuth({
-  baseURL: env.BASE_URL,
-  database: prismaAdapter(db, {
-    provider: 'mongodb',
-  }),
+export { currentUser } from "@clerk/nextjs/server";
+export { clerkClient } from "@clerk/nextjs/server";
 
-  // Use nextCookies plugin for Next.js integration
-  plugins: [nextCookies()],
+// Re-export client-side hooks for convenience
+export { useUser, useAuth, useClerk } from "@clerk/nextjs";
 
-  // https://www.better-auth.com/docs/concepts/session-management#session-caching
-  // session: {
-  //   cookieCache: {
-  //     enabled: true,
-  //     maxAge: 5 * 60, // 5 minutes
-  //   },
-  // },
+// Helper function to get user data
+export async function getUser() {
+  const user = await currentUser();
+  
+  if (!user) {
+    return null;
+  }
 
-  // https://www.better-auth.com/docs/concepts/oauth
-  socialProviders: {
-    github: {
-      clientId: env.GITHUB_CLIENT_ID!,
-      clientSecret: env.GITHUB_CLIENT_SECRET!,
-    },
-    google: {
-      clientId: env.GOOGLE_CLIENT_ID!,
-      clientSecret: env.GOOGLE_CLIENT_SECRET!,
-    },
-  },
-
-  // https://www.better-auth.com/docs/authentication/email-password
-  emailAndPassword: {
-    enabled: true,
-  },
-});
+  return {
+    id: user.id,
+    email: user.emailAddresses[0]?.emailAddress,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    imageUrl: user.imageUrl,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
+  };
+}

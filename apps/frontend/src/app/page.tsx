@@ -34,7 +34,7 @@ export default function Home() {
             <Link href="#try" className="hover:text-[#D26B36]">
               Try out
             </Link>
-            <Link href="/login" className="hover:text-[#D26B36]">
+            <Link href="/login/" className="hover:text-[#D26B36]">
               Log In
             </Link>
           </nav>
