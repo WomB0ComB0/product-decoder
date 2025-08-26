@@ -8,8 +8,9 @@
     "check": "bunx biome check --write || true",
     "format": "bunx biome format --write || true",
     "dev": "bun run --watch src/server.ts",
-    "build": "bun run lint && bun run format && bun build src/server.ts --outdir=build --target=bun --minify && bun run sentry:sourcemaps",
-    "start": "bun run build/server.js",
+    "build": "echo 'Build completed - Vercel will handle serverless deployment'",
+    "vercel-build": "bun run lint && bun run format",
+    "start": "bun run src/server.ts",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org womb0comb0 --project product-decoder-backend ./build && sentry-cli sourcemaps upload --org womb0comb0 --project product-decoder-backend ./build"
   },
   "dependencies": {
