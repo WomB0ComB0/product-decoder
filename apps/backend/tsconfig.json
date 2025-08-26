@@ -1,9 +1,10 @@
 {
 	"compilerOptions": {
 		"target": "ES2021",
-		"module": "ES2022",
+		"module": "ESNEXT",
 		"moduleResolution": "node",
 		"baseUrl": "./",
+		"resolveJsonModule": true,
 		"paths": {
 			"#/*": ["src/*"],
 			"#helpers/*": ["src/helpers/*"],
