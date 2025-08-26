@@ -1,3 +1,19 @@
+/**
+ * Copyright 2025 Mike Odnis
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { FetchHttpClient } from '@effect/platform';
 import type { HttpClient } from '@effect/platform/HttpClient';
 import { cors } from '@elysiajs/cors';
@@ -27,23 +43,54 @@ import { elysiaHelmet } from 'elysiajs-helmet';
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 
-// Environment variables
+/**
+ * Environment variable for GNews API key.
+ * @type {string | undefined}
+ */
 const GNEWS_API_KEY = process.env.GNEWS_API_KEY;
+
+/**
+ * Environment variable for Google API key.
+ * @type {string | undefined}
+ */
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
+
+/**
+ * Environment variable for Google Custom Search Engine ID.
+ * @type {string | undefined}
+ */
 const GOOGLE_CSE_CX = process.env.GOOGLE_SEARCH_ENGINE_ID;
+
+/**
+ * YouTube API key, reusing Google API key.
+ * @type {string | undefined}
+ */
 const YT_API_KEY = GOOGLE_API_KEY;
 
 if (!GNEWS_API_KEY) throw new Error('Missing GNEWS_API_KEY');
 if (!GOOGLE_API_KEY) throw new Error('Missing GOOGLE_API_KEY');
 if (!GOOGLE_CSE_CX) throw new Error('Missing GOOGLE_SEARCH_ENGINE_ID');
 
-// API endpoints
+/**
+ * Base URL for GNews API.
+ * @type {string}
+ */
 const GNEWS_BASE = 'https://gnews.io/api/v4';
+
+/**
+ * Endpoint for Google Custom Search Engine API.
+ * @type {string}
+ */
 const CSE_ENDPOINT = 'https://customsearch.googleapis.com/customsearch/v1';
+
+/**
+ * Endpoint for YouTube Search API.
+ * @type {string}
+ */
 const YT_SEARCH_ENDPOINT = 'https://www.googleapis.com/youtube/v3/search';
 
 /**
- * Stringifies an object with 2-space indentation.
+ * Stringifies an object with 2-space indentation for pretty-printing JSON.
  * @param {object} o - The object to stringify.
  * @returns {string} The pretty-printed JSON string.
  */
@@ -88,6 +135,7 @@ const checkDocker = async (): Promise<boolean> => {
  * Starts a Jaeger tracing container using Docker.
  * Logs output to ./logs/jaeger.log.
  * @see http://localhost:16686/search
+ * @returns {void}
  */
 const runJaeger = (): void => {
   const [out, err] = Array(2).fill(fs.openSync('./logs/jaeger.log', 'a'));
@@ -126,6 +174,9 @@ const runJaeger = (): void => {
 
 /**
  * Middleware for timing and logging the duration of each request.
+ * Adds a `start` timestamp to the store before handling,
+ * and logs the duration after handling.
+ * @type {Elysia}
  */
 const timingMiddleware = new Elysia()
   .state({ start: 0 })
@@ -136,7 +187,12 @@ const timingMiddleware = new Elysia()
   });
 
 /**
- * Effect runtime utility
+ * Runs an Effect in the Effect runtime, providing the FetchHttpClient layer if needed.
+ * @template A The success type of the Effect.
+ * @template E The error type of the Effect.
+ * @template R The environment type of the Effect.
+ * @param {Effect.Effect<A, E, R>} eff - The Effect to run.
+ * @returns {Promise<A>} A promise resolving to the Effect's result.
  */
 function run<A, E>(eff: Effect.Effect<A, E, never>): Promise<A>;
 function run<A, E>(eff: Effect.Effect<A, E, HttpClient>): Promise<A>;
@@ -148,14 +204,18 @@ function run<A, E, R>(eff: Effect.Effect<A, E, R>): Promise<A> {
 }
 
 /**
- * Google Vision client
+ * Google Vision client for image annotation.
+ * @type {vision.ImageAnnotatorClient}
  */
 const client = new vision.ImageAnnotatorClient({
   keyFilename: './credentials.json',
 });
 
 /**
- * Normalize web detection response
+ * Normalizes the web detection response from Google Vision API.
+ * Extracts web entities, matching images, and pages with matching images.
+ * @param {any} res - The raw response from Google Vision API.
+ * @returns {object} The normalized web detection result.
  */
 function normalizeWebDetection(res: any) {
   const web = res?.webDetection ?? {};
@@ -179,6 +239,8 @@ function normalizeWebDetection(res: any) {
 
 /**
  * OpenTelemetry resource for Jaeger tracing.
+ * Sets the service name for trace identification.
+ * @type {import('@opentelemetry/resources').Resource}
  */
 const otelResource = resourceFromAttributes({
   [ATTR_SERVICE_NAME]: 'elysia-api',
@@ -186,6 +248,7 @@ const otelResource = resourceFromAttributes({
 
 /**
  * OTLP trace exporter for sending traces to Jaeger.
+ * @type {OTLPTraceExporter}
  */
 const otlpExporter = new OTLPTraceExporter({
   url: 'http://localhost:4318/v1/traces',
@@ -194,6 +257,8 @@ const otlpExporter = new OTLPTraceExporter({
 
 /**
  * Batch span processor for OpenTelemetry.
+ * Handles batching and exporting of trace spans.
+ * @type {BatchSpanProcessor}
  */
 const batchSpanProcessor = new BatchSpanProcessor(otlpExporter, {
   maxExportBatchSize: 512,
@@ -204,6 +269,8 @@ const batchSpanProcessor = new BatchSpanProcessor(otlpExporter, {
 
 /**
  * Content Security Policy permissions for Helmet.
+ * Used to configure allowed sources for various content types.
+ * @type {object}
  */
 const permission = {
   SELF: "'self'",
@@ -216,6 +283,13 @@ const permission = {
 
 /**
  * Utility routes for status, version, info, and health endpoints.
+ * Includes:
+ *   - Root welcome endpoint
+ *   - Status (uptime, memory, version, environment)
+ *   - Version
+ *   - Info (contact, documentation)
+ *   - Health check
+ * @type {Elysia}
  */
 const utilityRoutes = new Elysia()
   .use(timingMiddleware)
@@ -322,11 +396,24 @@ const utilityRoutes = new Elysia()
   );
 
 /**
- * API routes for your existing functionality
+ * API routes for main application functionality.
+ * Includes:
+ *   - Google reverse image search (Vision API)
+ *   - GNews search and top headlines
+ *   - Google Custom Search Engine (CSE)
+ *   - YouTube video search
+ * @type {Elysia}
  */
 const apiRoutes = new Elysia({ prefix: '/api' })
   .post(
     '/google/reverse-image',
+    /**
+     * Handles reverse image search using Google Vision API.
+     * Expects a FormData body with an image file.
+     * @param {object} param0 - The request context.
+     * @param {FormData} param0.body - The form data containing the image file.
+     * @returns {Promise<Response>} The response with web detection results or error.
+     */
     async ({ body }) => {
       return record('reverse-image.post', async () => {
         // Use Elysia's body parameter instead of request.formData()
@@ -369,6 +456,13 @@ const apiRoutes = new Elysia({ prefix: '/api' })
   )
   .get(
     '/gnews/search',
+    /**
+     * Searches news articles using the GNews API.
+     * Accepts query parameters for search customization.
+     * @param {object} param0 - The request context.
+     * @param {Record<string, string>} param0.query - The query parameters.
+     * @returns {Promise<Response>} The response with search results.
+     */
     async ({ query }) => {
       return record('gnews.search.get', async () => {
         const p = query as Record<string, string>;
@@ -403,6 +497,13 @@ const apiRoutes = new Elysia({ prefix: '/api' })
   )
   .get(
     '/gnews/top-headlines',
+    /**
+     * Retrieves top news headlines using the GNews API.
+     * Accepts query parameters for filtering.
+     * @param {object} param0 - The request context.
+     * @param {Record<string, string>} param0.query - The query parameters.
+     * @returns {Promise<Response>} The response with top headlines.
+     */
     async ({ query }) => {
       return record('gnews.headlines.get', async () => {
         const p = query as Record<string, string>;
@@ -443,6 +544,13 @@ const apiRoutes = new Elysia({ prefix: '/api' })
   )
   .get(
     '/google/cse',
+    /**
+     * Performs a search using Google Custom Search Engine (CSE).
+     * Accepts query parameters for search customization.
+     * @param {object} param0 - The request context.
+     * @param {Record<string, string>} param0.query - The query parameters.
+     * @returns {Promise<Response>} The response with search results or error.
+     */
     async ({ query }) => {
       return record('google.cse.get', async () => {
         try {
@@ -518,9 +626,15 @@ const apiRoutes = new Elysia({ prefix: '/api' })
       },
     },
   )
-  // done
   .get(
     '/google/youtube/search',
+    /**
+     * Searches for YouTube videos using the YouTube Data API.
+     * Accepts query parameters for search customization.
+     * @param {object} param0 - The request context.
+     * @param {Record<string, string>} param0.query - The query parameters.
+     * @returns {Promise<Response>} The response with YouTube search results.
+     */
     async ({ query }) => {
       return record('youtube.search.get', async () => {
         const p = query as Record<string, string>;
@@ -552,6 +666,19 @@ const apiRoutes = new Elysia({ prefix: '/api' })
 
 /**
  * Main application instance with all middleware and routes.
+ * Configures:
+ *   - Swagger documentation
+ *   - Tracing and logging
+ *   - Security headers (Helmet)
+ *   - IP extraction
+ *   - OpenTelemetry tracing
+ *   - Server timing
+ *   - CORS
+ *   - Rate limiting
+ *   - Utility and API routes
+ *   - Error handling
+ *   - Server startup logging
+ * @type {Elysia}
  */
 const app = new Elysia({ name: 'Server API' })
   .use(
@@ -607,38 +734,30 @@ const app = new Elysia({ name: 'Server API' })
       },
     }),
   )
-  .trace(async ({ onBeforeHandle, onAfterHandle, onError }) => {
-    onBeforeHandle(({ begin, onStop }) => {
-      onStop(({ end }) => {
-        logger.debug('BeforeHandle took', { duration: end - begin });
+  .trace(
+    /**
+     * Configures tracing hooks for before/after/error handling.
+     * Logs timing and errors for each request.
+     * @param {object} param0 - The tracing context.
+     */
+    async ({ onBeforeHandle, onAfterHandle, onError }) => {
+      onBeforeHandle(({ begin, onStop }) => {
+        onStop(({ end }) => {
+          logger.debug('BeforeHandle took', { duration: end - begin });
+        });
       });
-    });
-    onAfterHandle(({ begin, onStop }) => {
-      onStop(({ end }) => {
-        logger.debug('AfterHandle took', { duration: end - begin });
+      onAfterHandle(({ begin, onStop }) => {
+        onStop(({ end }) => {
+          logger.debug('AfterHandle took', { duration: end - begin });
+        });
       });
-    });
-    onError(({ begin, onStop }) => {
-      onStop(({ end, error }) => {
-        logger.error('Error occurred after trace', error, { duration: end - begin });
+      onError(({ begin, onStop }) => {
+        onStop(({ end, error }) => {
+          logger.error('Error occurred after trace', error, { duration: end - begin });
+        });
       });
-    });
-  })
-  // .use(
-  // 	logixlysia({
-  //     config: {
-  //       showStartupMessage: true,
-  //       startupMessageFormat: 'simple',
-  //       timestamp: {
-  //         translateTime: 'yyyy-mm-dd HH:MM:ss.SSS'
-  //       },
-  //       logFilePath: './logs/server.log',
-  //       ip: true,
-  //       customLogFormat:
-  //         '🦊 {now} {level} {duration} {method} {pathname} {status} {message} {ip}'
-  //     }
-  //   })
-  // )
+    }
+  )
   .use(
     elysiaHelmet({
       csp: {
@@ -712,25 +831,47 @@ const app = new Elysia({ name: 'Server API' })
   )
   .use(utilityRoutes)
   .use(apiRoutes)
-  .onError(({ code, error, set }) => {
-    logger.error('API error handler', error, { code });
-    set.status = code === 'NOT_FOUND' ? 404 : 500;
-    return Stringify({
-      error: Error.isError(error) ? Stringify({ error }) : Stringify({ error }),
-      status: set.status,
-    });
-  })
-  .listen(env.SERVER_PORT, (server) => {
-    console.timeEnd('⌛ Startup Time');
-    console.log(`🌱 NODE_ENV: ${env.NODE_ENV || 'development'}`);
-    console.log(`🍙 Bun Version: ${Bun.version}`);
-    console.log(`🦊 Elysia.js Version: ${require('elysia/package.json').version}`);
-    console.log(`🚀 Server is running at ${server.url}`);
-    console.log('--------------------------------------------------');
-  });
+  .onError(
+    /**
+     * Global error handler for the API.
+     * Logs the error and returns a JSON error response.
+     * @param {object} param0 - The error context.
+     * @param {string} param0.code - The error code.
+     * @param {Error} param0.error - The error object.
+     * @param {object} param0.set - The response setter.
+     * @returns {string} The JSON error response.
+     */
+    ({ code, error, set }) => {
+      logger.error('API error handler', error, { code });
+      set.status = code === 'NOT_FOUND' ? 404 : 500;
+      return Stringify({
+        error: Error.isError(error) ? Stringify({ error }) : Stringify({ error }),
+        status: set.status,
+      });
+    }
+  )
+  .listen(
+    env.SERVER_PORT,
+    /**
+     * Callback for when the server starts listening.
+     * Logs environment, versions, and server URL.
+     * @param {object} server - The server instance.
+     */
+    (server) => {
+      console.timeEnd('⌛ Startup Time');
+      console.log(`🌱 NODE_ENV: ${env.NODE_ENV || 'development'}`);
+      console.log(`🍙 Bun Version: ${Bun.version}`);
+      console.log(`🦊 Elysia.js Version: ${require('elysia/package.json').version}`);
+      console.log(`🚀 Server is running at ${server.url}`);
+      console.log('--------------------------------------------------');
+    }
+  );
 
 /**
  * Gracefully shuts down the application and flushes telemetry.
+ * Ensures all spans are exported and the server is stopped.
+ * @async
+ * @returns {Promise<void>}
  */
 const shutdown = async (): Promise<void> => {
   logger.info('Shutting down 🦊 Elysia');
@@ -744,6 +885,10 @@ process.on('SIGTERM', shutdown);
 
 /**
  * Initializes Jaeger tracing if Docker is available.
+ * Checks for a running Jaeger container, starts one if not found.
+ * Logs URLs for API, Swagger docs, and Jaeger UI.
+ * @async
+ * @returns {Promise<void>}
  */
 const initializeJaeger = async (): Promise<void> => {
   if (await checkDocker()) {
@@ -766,4 +911,8 @@ const initializeJaeger = async (): Promise<void> => {
 
 process.env.NODE_ENV === 'development' && initializeJaeger();
 
+/**
+ * The type of the main Elysia application instance.
+ * @typedef {typeof app} App
+ */
 export type App = typeof app;
