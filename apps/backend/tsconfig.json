@@ -5,6 +5,7 @@
 		"moduleResolution": "node",
 		"baseUrl": "./",
 		"resolveJsonModule": true,
+		"outDir": "dist",
 		"paths": {
 			"#/*": ["src/*"],
 			"#helpers/*": ["src/helpers/*"],
