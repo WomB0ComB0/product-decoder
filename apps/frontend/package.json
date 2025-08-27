@@ -16,14 +16,14 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "bun run next build",
+    "build": "next build",
     "check": "bun run format && bun run lint && bun run check-types",
     "check-types": "bunx tsc --noEmit",
     "deps": "bunx taze@latest major -Ilw",
-    "dev": "bun run next dev --port 3000",
+    "dev": "next dev",
     "format": "bunx @biomejs/biome format --write . || true",
     "lint": "bunx @biomejs/biome lint . || true",
-    "start": "bun run next start",
+    "start": "next start",
     "ui": "bunx shadcn@latest"
   },
   "browserslist": {
