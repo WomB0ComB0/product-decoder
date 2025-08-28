@@ -27,8 +27,8 @@ import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-node';
 import { ATTR_SERVICE_NAME } from '@opentelemetry/semantic-conventions';
 import { logger } from '@packages/logger';
 import {
-  get,
   GNewsResponse,
+  get,
   RawCse,
   SearchRecommendation,
   type TRawCse,
@@ -158,7 +158,7 @@ function run<A, E, R>(eff: Effect.Effect<A, E, R>): Promise<A> {
 const client = new vision.ImageAnnotatorClient(
   process.env.GCP_SERVICE_ACCOUNT_JSON
     ? { credentials: JSON.parse(process.env.GCP_SERVICE_ACCOUNT_JSON) }
-    : { keyFilename: './credentials.json' }
+    : { keyFilename: './credentials.json' },
 );
 
 /**
@@ -201,10 +201,12 @@ const otelResource = resourceFromAttributes({
  * Only configured for local development.
  * @type {OTLPTraceExporter | undefined}
  */
-const otlpExporter = !IS_VERCEL ? new OTLPTraceExporter({
-  url: 'http://localhost:4318/v1/traces',
-  keepAlive: true,
-}) : undefined;
+const otlpExporter = !IS_VERCEL
+  ? new OTLPTraceExporter({
+      url: 'http://localhost:4318/v1/traces',
+      keepAlive: true,
+    })
+  : undefined;
 
 /**
  * Batch span processor for OpenTelemetry.
@@ -212,12 +214,14 @@ const otlpExporter = !IS_VERCEL ? new OTLPTraceExporter({
  * Only configured for local development.
  * @type {BatchSpanProcessor | undefined}
  */
-const batchSpanProcessor = otlpExporter ? new BatchSpanProcessor(otlpExporter, {
-  maxExportBatchSize: 512,
-  scheduledDelayMillis: 5_000,
-  exportTimeoutMillis: 30_000,
-  maxQueueSize: 2_048,
-}) : undefined;
+const batchSpanProcessor = otlpExporter
+  ? new BatchSpanProcessor(otlpExporter, {
+      maxExportBatchSize: 512,
+      scheduledDelayMillis: 5_000,
+      exportTimeoutMillis: 30_000,
+      maxQueueSize: 2_048,
+    })
+  : undefined;
 
 /**
  * Content Security Policy permissions for Helmet.
@@ -544,12 +548,12 @@ const apiRoutes = new Elysia({ prefix: '/api' })
                 snippet: it?.snippet ?? 'No snippet available',
                 ...(t?.src
                   ? {
-                    thumbnail: {
-                      src: String(t.src),
-                      width: String(t.width ?? ''),
-                      height: String(t.height ?? ''),
-                    },
-                  }
+                      thumbnail: {
+                        src: String(t.src),
+                        width: String(t.width ?? ''),
+                        height: String(t.height ?? ''),
+                      },
+                    }
                   : {}),
               };
             }),
@@ -708,7 +712,7 @@ export const app = new Elysia({ name: 'Server API' })
           logger.error('Error occurred after trace', error, { duration: end - begin });
         });
       });
-    }
+    },
   )
   .use(
     elysiaHelmet({
@@ -735,10 +739,12 @@ export const app = new Elysia({ name: 'Server API' })
   .use(ip())
   .use(
     // Only use OpenTelemetry in local development
-    batchSpanProcessor ? opentelemetry({
-      resource: otelResource,
-      spanProcessors: [batchSpanProcessor],
-    }) : new Elysia()
+    batchSpanProcessor
+      ? opentelemetry({
+          resource: otelResource,
+          spanProcessors: [batchSpanProcessor],
+        })
+      : new Elysia(),
   )
   .use(
     serverTiming({
@@ -801,7 +807,7 @@ export const app = new Elysia({ name: 'Server API' })
         error: Error.isError(error) ? Stringify({ error }) : Stringify({ error }),
         status: set.status,
       });
-    }
+    },
   );
 
 /**

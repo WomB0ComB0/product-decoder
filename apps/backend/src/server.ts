@@ -30,9 +30,9 @@
  * limitations under the License.
  */
 
+import { env } from 'elysia';
 // Local development server only
 import { app } from './app';
-import { env } from 'elysia';
 
 const port = Number(env.SERVER_PORT || 3_000);
 
@@ -40,7 +40,7 @@ const port = Number(env.SERVER_PORT || 3_000);
 console.time('⌛ Startup Time');
 
 app.listen(
-  { port, reusePort: true, hostname: "::" },
+  { port, reusePort: true, hostname: '::' },
   /**
    * Callback for when the server starts listening.
    * Logs environment, versions, and server URL.
@@ -49,12 +49,12 @@ app.listen(
   (server) => {
     console.timeEnd('⌛ Startup Time');
     console.log(`🌱 NODE_ENV: ${env.NODE_ENV || 'development'}`);
-    
+
     // Only show Bun version in local development
     if (!process.env.VERCEL && typeof Bun !== 'undefined') {
       console.log(`🍙 Bun Version: ${Bun.version}`);
     }
-    
+
     console.log(`🦊 Elysia.js Version: ${require('elysia/package.json').version}`);
     console.log(`🚀 Server is running at ${server.url}`);
     console.log('--------------------------------------------------');

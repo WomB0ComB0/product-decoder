@@ -19,7 +19,7 @@ declare global {
       readonly GOOGLE_SEARCH_ENGINE_ID: string;
       readonly GEMINI_API_KEY: string;
       readonly GOOGLE_CSE_CX: string;
-      readonly GCP_CREDENTIALS_JSON: string ;
+      readonly GCP_CREDENTIALS_JSON: string;
     }
   }
 }
