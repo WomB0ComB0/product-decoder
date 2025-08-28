@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { existsSync } from 'node:fs';
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { existsSync } from 'node:fs';
 
 interface TurboConfig {
   $schema?: string;
@@ -202,7 +202,7 @@ async function main() {
 }
 
 // Execute the script
-if (import.meta.main) {
+if (process.main) {
   main().catch((error) => {
     console.error('❌ Script failed:', error);
     process.exit(1);

@@ -29,7 +29,7 @@ const retry = async (fn: () => Promise<any>, retries = 3, delay = 1_000) => {
   }
 };
 
-if (import.meta.main) {
+if (process.main) {
   const isDev = Bun.env.NODE_ENV !== 'production';
 
   try {

@@ -16,10 +16,10 @@
  * limitations under the License.
  */
 
+import { GoogleGenAI } from '@google/genai';
 import { execSync } from 'node:child_process';
 import { readdir, writeFile } from 'node:fs/promises';
 import { basename, extname, join } from 'node:path';
-import { GoogleGenAI } from '@google/genai';
 
 /**
  * @interface GenerationConfig
@@ -913,7 +913,7 @@ async function main() {
 }
 
 // Run if called directly
-if (import.meta.main) {
+if (process.main) {
   main().catch(console.error);
 }
 
