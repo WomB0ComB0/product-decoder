@@ -8,10 +8,10 @@
     "check": "bunx biome check --write || true",
     "format": "bunx biome format --write || true",
     "dev": "bun run --watch src/server.ts",
-    "build": "mkdir -p public && echo 'Serverless function - no static files' > public/index.html && bun run build:packages && bun run build:workspace",
+    "build": "mkdir -p public && echo 'Serverless function - no static files' > public/index.html && bun run build:workspace",
     "build:packages": "cd ../../packages/logger && bun run build && cd ../shared && bun run build",
     "build:workspace": "mkdir -p node_modules/@packages && cp -r ../../packages/logger/dist node_modules/@packages/logger && cp -r ../../packages/shared/dist node_modules/@packages/shared && cp ../../packages/logger/package.json node_modules/@packages/logger/ && cp ../../packages/shared/package.json node_modules/@packages/shared/",
-    "vercel-build": "bun run build",
+    "vercel-build": "bun run build:packages && bun run build",
     "start": "bun run src/server.ts",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org womb0comb0 --project product-decoder-backend ./dist && sentry-cli sourcemaps upload --org womb0comb0 --project product-decoder-backend ./dist"
   },
