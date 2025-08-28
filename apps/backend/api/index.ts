@@ -15,8 +15,6 @@
  */
 
 // Vercel Function entry point
-export const runtime = 'nodejs20';
-
 import { app } from '../src/app';
 
 export default app;

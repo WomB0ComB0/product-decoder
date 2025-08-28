@@ -8,8 +8,8 @@
     "check": "bunx biome check --write || true",
     "format": "bunx biome format --write || true",
     "dev": "bun run --watch src/server.ts",
-    "build": "echo 'Build handled by Vercel'",
-    "vercel-build": "echo 'No build step needed for Vercel'",
+    "build": "echo 'TypeScript compilation handled by Vercel'",
+    "vercel-build": "echo 'No build step needed for Vercel Functions'",
     "start": "bun run src/server.ts",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org womb0comb0 --project product-decoder-backend ./dist && sentry-cli sourcemaps upload --org womb0comb0 --project product-decoder-backend ./dist"
   },
