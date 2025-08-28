@@ -14,4 +14,9 @@
  * limitations under the License.
  */
 
-export * from './app';
+// Vercel Function entry point
+export const runtime = 'nodejs20';
+
+import { app } from '../src/app';
+
+export default app;
