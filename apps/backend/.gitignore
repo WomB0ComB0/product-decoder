@@ -62,3 +62,4 @@ build
 .env
 # Sentry Config File
 .sentryclirc
+credentials.json

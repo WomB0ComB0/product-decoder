@@ -1,23 +1,9 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "dist/server.js",
-      "use": "@vercel/node",
-      "config": { "includeFiles": ["dist/**"] }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "dist/server.js",
-      "methods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-      "headers": {
-        "Access-Control-Allow-Credentials": "true",
-        "Access-Control-Allow-Origin": "https://product-decoder-frontend.vercel.app",
-        "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
-        "Access-Control-Allow-Headers": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, API-Key, Authorization"
-      }
-    }
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+		{
+			"source": "/(.*)",
+			"destination": "/api"
+		}
   ]
 }

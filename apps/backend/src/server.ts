@@ -40,8 +40,6 @@ import { Elysia, env } from 'elysia';
 import { ip } from 'elysia-ip';
 import { DefaultContext, type Generator, rateLimit } from 'elysia-rate-limit';
 import { elysiaHelmet } from 'elysiajs-helmet';
-import { spawn } from 'node:child_process';
-import fs from 'node:fs';
 
 /**
  * Environment variable for GNews API key.
@@ -117,62 +115,6 @@ const version: string =
     })) || 'N/A';
 
 /**
- * Checks if Docker is running on the system.
- * @async
- * @returns {Promise<boolean>} True if Docker is active, false otherwise.
- */
-const checkDocker = async (): Promise<boolean> => {
-  try {
-    const { stdout } = await Bun.$`systemctl is-active docker`;
-    return stdout.toString().trim() === 'active';
-  } catch (error) {
-    logger.error('Docker is not running or systemctl command failed', error);
-    return false;
-  }
-};
-
-/**
- * Starts a Jaeger tracing container using Docker.
- * Logs output to ./logs/jaeger.log.
- * @see http://localhost:16686/search
- * @returns {void}
- */
-const runJaeger = (): void => {
-  const [out, err] = Array(2).fill(fs.openSync('./logs/jaeger.log', 'a'));
-
-  const jaeger = spawn(
-    'docker',
-    [
-      'run',
-      '--rm',
-      '--name',
-      'jaeger',
-      '-p',
-      '5778:5778',
-      '-p',
-      '16686:16686',
-      '-p',
-      '4317:4317',
-      '-p',
-      '4318:4318',
-      '-p',
-      '14250:14250',
-      '-p',
-      '14268:14268',
-      '-p',
-      '9411:9411',
-      'jaegertracing/jaeger:2.1.0',
-    ],
-    {
-      detached: true,
-      stdio: ['ignore', out, err],
-    },
-  );
-
-  jaeger.unref();
-};
-
-/**
  * Middleware for timing and logging the duration of each request.
  * Adds a `start` timestamp to the store before handling,
  * and logs the duration after handling.
@@ -208,7 +150,7 @@ function run<A, E, R>(eff: Effect.Effect<A, E, R>): Promise<A> {
  * @type {vision.ImageAnnotatorClient}
  */
 const client = new vision.ImageAnnotatorClient({
-  keyFilename: './credentials.json',
+  keyFilename: process.env.GCP_CREDENTIALS_JSON,
 });
 
 /**
@@ -591,12 +533,12 @@ const apiRoutes = new Elysia({ prefix: '/api' })
                 snippet: it?.snippet ?? 'No snippet available',
                 ...(t?.src
                   ? {
-                      thumbnail: {
-                        src: String(t.src),
-                        width: String(t.width ?? ''),
-                        height: String(t.height ?? ''),
-                      },
-                    }
+                    thumbnail: {
+                      src: String(t.src),
+                      width: String(t.width ?? ''),
+                      height: String(t.height ?? ''),
+                    },
+                  }
                   : {}),
               };
             }),
@@ -809,7 +751,7 @@ const app = new Elysia({ name: 'Server API' })
       methods: ['GET', 'POST', 'OPTIONS'], // Specify allowed HTTP methods
       allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers
       credentials: true, // Allow credentials (e.g., cookies, authorization headers)
-      maxAge: 86400, // Cache the preflight response for 24 hours
+      maxAge: 86_400, // Cache the preflight response for 24 hours
     }),
   )
   .use(
@@ -851,7 +793,7 @@ const app = new Elysia({ name: 'Server API' })
     }
   )
   .listen(
-    env.SERVER_PORT,
+    { port: Number(env.SERVER_PORT || 3_000), reusePort: true, hostname: "::" },
     /**
      * Callback for when the server starts listening.
      * Logs environment, versions, and server URL.
@@ -864,7 +806,7 @@ const app = new Elysia({ name: 'Server API' })
       console.log(`🦊 Elysia.js Version: ${require('elysia/package.json').version}`);
       console.log(`🚀 Server is running at ${server.url}`);
       console.log('--------------------------------------------------');
-    }
+    },
   );
 
 /**
@@ -882,34 +824,6 @@ const shutdown = async (): Promise<void> => {
 
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
-
-/**
- * Initializes Jaeger tracing if Docker is available.
- * Checks for a running Jaeger container, starts one if not found.
- * Logs URLs for API, Swagger docs, and Jaeger UI.
- * @async
- * @returns {Promise<void>}
- */
-const initializeJaeger = async (): Promise<void> => {
-  if (await checkDocker()) {
-    logger.info('Docker is running. Checking for Jaeger container...');
-    try {
-      await Bun.$`docker inspect -f {{.State.Running}} jaeger`.text();
-      logger.info('Jaeger container is already running.');
-    } catch {
-      logger.info('Jaeger container not found or not running. Starting Jaeger...');
-      runJaeger();
-    }
-  } else {
-    logger.warn('Docker is not running. Skipping Jaeger initialization.');
-  }
-
-  logger.success('→ http://localhost:3000');
-  logger.success('→ Swagger docs: http://localhost:3000/swagger');
-  logger.success('→ Jaeger UI: http://localhost:16686/search');
-};
-
-process.env.NODE_ENV === 'development' && initializeJaeger();
 
 /**
  * The type of the main Elysia application instance.
