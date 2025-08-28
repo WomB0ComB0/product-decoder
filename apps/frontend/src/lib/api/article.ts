@@ -14,7 +14,23 @@
  * limitations under the License.
  */
 
-import { APIError, ConstructorOptions, NewsCategory, NewsRequestParams, NewsResponse, SourcesRequestParams } from "@packages/shared";
+import {
+	APIError,
+	ConstructorOptions,
+	NewsCategory,
+	NewsRequestParams,
+	NewsResponse,
+	SourcesRequestParams,
+	MediaStackSourcesResponse,
+	// Import the schemas for runtime validation
+	APIErrorSchema,
+	ConstructorOptionsSchema,
+	NewsCategorySchema,
+	NewsRequestParamsSchema,
+	NewsResponseSchema,
+	SourcesRequestParamsSchema,
+	MediaStackSourcesResponseSchema,
+} from "@packages/shared";
 import { type } from "arktype";
 
 export class MediastackAPI {
@@ -27,7 +43,7 @@ export class MediastackAPI {
 
 	constructor(apiKey?: string, options?: ConstructorOptions) {
 		if (options !== undefined) {
-			const validationResult = ConstructorOptions(options);
+			const validationResult = ConstructorOptionsSchema(options);
 			if (validationResult instanceof type.errors) {
 				throw new Error(
 					`Invalid constructor options: ${validationResult.summary}`,
@@ -95,7 +111,7 @@ export class MediastackAPI {
 			const data = await response.json();
 
 			if (!response.ok) {
-				const errorValidation = APIError(data);
+				const errorValidation = APIErrorSchema(data);
 				if (errorValidation instanceof type.errors) {
 					throw new Error(
 						`Invalid API error response format: ${errorValidation.summary}`,
@@ -158,14 +174,14 @@ export class MediastackAPI {
 	 * Get live news articles
 	 */
 	async getNews(params: NewsRequestParams = {}): Promise<NewsResponse> {
-		const validationResult = NewsRequestParams(params);
+		const validationResult = NewsRequestParamsSchema(params);
 		if (validationResult instanceof type.errors) {
 			throw new Error(
 				`Invalid news request parameters: ${validationResult.summary}`,
 			);
 		}
 
-		return this.makeRequest<NewsResponse>("news", params, NewsResponse);
+		return this.makeRequest<NewsResponse>("news", params, NewsResponseSchema);
 	}
 
 	/**
@@ -176,14 +192,14 @@ export class MediastackAPI {
 		params: Omit<NewsRequestParams, "date"> = {},
 	): Promise<NewsResponse> {
 		const fullParams = { ...params, date };
-		const validationResult = NewsRequestParams(fullParams);
+		const validationResult = NewsRequestParamsSchema(fullParams);
 		if (validationResult instanceof type.errors) {
 			throw new Error(
 				`Invalid historical news parameters: ${validationResult.summary}`,
 			);
 		}
 
-		return this.makeRequest<NewsResponse>("news", fullParams, NewsResponse);
+		return this.makeRequest<NewsResponse>("news", fullParams, NewsResponseSchema);
 	}
 
 	/**
@@ -191,18 +207,18 @@ export class MediastackAPI {
 	 */
 	async getSources(
 		params: SourcesRequestParams = {},
-	): Promise<SourcesResponse> {
-		const validationResult = SourcesRequestParams(params);
+	): Promise<MediaStackSourcesResponse> {
+		const validationResult = SourcesRequestParamsSchema(params);
 		if (validationResult instanceof type.errors) {
 			throw new Error(
 				`Invalid sources request parameters: ${validationResult.summary}`,
 			);
 		}
 
-		return this.makeRequest<SourcesResponse>(
+		return this.makeRequest<MediaStackSourcesResponse>(
 			"sources",
 			params,
-			SourcesResponse,
+			MediaStackSourcesResponseSchema,
 		);
 	}
 
@@ -218,12 +234,12 @@ export class MediastackAPI {
 		}
 
 		const fullParams = { ...params, keywords };
-		const validationResult = NewsRequestParams(fullParams);
+		const validationResult = NewsRequestParamsSchema(fullParams);
 		if (validationResult instanceof type.errors) {
 			throw new Error(`Invalid search parameters: ${validationResult.summary}`);
 		}
 
-		return this.makeRequest<NewsResponse>("news", fullParams, NewsResponse);
+		return this.makeRequest<NewsResponse>("news", fullParams, NewsResponseSchema);
 	}
 
 	/**
@@ -234,7 +250,7 @@ export class MediastackAPI {
 		params: Omit<NewsRequestParams, "categories"> = {},
 	): Promise<NewsResponse> {
 		for (const category of categories) {
-			const categoryValidation = NewsCategory(category);
+			const categoryValidation = NewsCategorySchema(category);
 			if (categoryValidation instanceof type.errors) {
 				throw new Error(
 					`Invalid category "${category}": ${categoryValidation.summary}`,
@@ -243,14 +259,14 @@ export class MediastackAPI {
 		}
 
 		const fullParams = { ...params, categories: categories.join(",") };
-		const validationResult = NewsRequestParams(fullParams);
+		const validationResult = NewsRequestParamsSchema(fullParams);
 		if (validationResult instanceof type.errors) {
 			throw new Error(
 				`Invalid category request parameters: ${validationResult.summary}`,
 			);
 		}
 
-		return this.makeRequest<NewsResponse>("news", fullParams, NewsResponse);
+		return this.makeRequest<NewsResponse>("news", fullParams, NewsResponseSchema);
 	}
 
 	/**
@@ -271,14 +287,14 @@ export class MediastackAPI {
 		}
 
 		const fullParams = { ...params, countries: countries.join(",") };
-		const validationResult = NewsRequestParams(fullParams);
+		const validationResult = NewsRequestParamsSchema(fullParams);
 		if (validationResult instanceof type.errors) {
 			throw new Error(
 				`Invalid country request parameters: ${validationResult.summary}`,
 			);
 		}
 
-		return this.makeRequest<NewsResponse>("news", fullParams, NewsResponse);
+		return this.makeRequest<NewsResponse>("news", fullParams, NewsResponseSchema);
 	}
 
 	/**
@@ -299,14 +315,14 @@ export class MediastackAPI {
 		}
 
 		const fullParams = { ...params, languages: languages.join(",") };
-		const validationResult = NewsRequestParams(fullParams);
+		const validationResult = NewsRequestParamsSchema(fullParams);
 		if (validationResult instanceof type.errors) {
 			throw new Error(
 				`Invalid language request parameters: ${validationResult.summary}`,
 			);
 		}
 
-		return this.makeRequest<NewsResponse>("news", fullParams, NewsResponse);
+		return this.makeRequest<NewsResponse>("news", fullParams, NewsResponseSchema);
 	}
 
 	/**
@@ -340,7 +356,11 @@ export function formatDate(date: Date): string {
 	if (!(date instanceof Date) || isNaN(date.getTime())) {
 		throw new Error("Invalid date provided to formatDate");
 	}
-	return date.toISOString().split("T")[0];
+	const result = date.toISOString().split("T")[0];
+	if (!result) {
+		throw new Error("Failed to format date");
+	}
+	return result;
 }
 
 export function getDateRange(startDate: Date, endDate: Date): string {

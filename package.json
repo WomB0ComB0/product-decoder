@@ -18,7 +18,8 @@
     "test": "turbo run test",
     "ts:shake": "bun ./bin/unused-tree-shake.ts",
     "types": "turbo run check",
-    "update:sec": "bun ./bin/update-security-md.js"
+    "update:sec": "bun ./bin/update-security-md.js",
+    "deps:install": "find . -type d \\( -name node_modules -o -name dist -o -name build -o -name .next -o -name '*-testing' \\) -prune -o -type f -name package.json -print0 | xargs -0 -I{} bash -c 'dir=\"$(dirname \"{}\")\"; echo \"\\n📦 Installing in $dir\"; cd \"$dir\" && bun install --no-save'"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.31.4",

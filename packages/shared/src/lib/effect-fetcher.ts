@@ -377,6 +377,7 @@ export function fetcher<T = unknown>(
 			case "HEAD":
 				return HttpClientRequest.head(url);
 			default: {
+				// @ts-ignore
 				const _exhaustive: never = method;
 				throw new Error(`Unsupported HTTP method: ${method}`);
 			}

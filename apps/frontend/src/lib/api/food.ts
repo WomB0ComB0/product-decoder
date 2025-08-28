@@ -14,7 +14,27 @@
  * limitations under the License.
  */
 
-import { AbridgedFood, DataType, FDCClientConfig, Food, FoodNutrient, FoodsListResponse, FoodsOptions, ListOptions, SearchOptions, SearchResult, SortBy, SortOrder } from "@packages/shared";
+import {
+	AbridgedFood,
+	DataType,
+	FDCClientConfig,
+	Food,
+	FoodNutrient,
+	FoodsListResponse,
+	FoodsOptions,
+	ListOptions,
+	SearchOptions,
+	SearchResult,
+	// Import schemas for runtime validation
+	FDCClientConfigSchema,
+	FoodSchema,
+	FoodsOptionsSchema,
+	ListOptionsSchema,
+	SearchOptionsSchema,
+	SearchResultSchema,
+	FoodsListResponseSchema,
+	DataTypeSchema,
+} from "@packages/shared";
 import { type } from "arktype";
 
 
@@ -67,7 +87,7 @@ export class FDCClient {
 
 	constructor(config: FDCClientConfig) {
 		// Validate constructor config
-		const configValidation = FDCClientConfig(config);
+		const configValidation = FDCClientConfigSchema(config);
 		if (configValidation instanceof type.errors) {
 			throw new FDCValidationError(
 				"Invalid client configuration",
@@ -285,14 +305,14 @@ export class FDCClient {
 		const queryString = this.buildQueryParams(params);
 		const endpoint = `/food/${fdcId}?${queryString}`;
 
-		return this.makeRequest<Food>(endpoint, Food);
+		return this.makeRequest<Food>(endpoint, FoodSchema);
 	}
 
 	/**
 	 * Get details for multiple food items by FDC IDs
 	 */
 	async getFoods(options: FoodsOptions): Promise<Food[]> {
-		const optionsValidation = FoodsOptions(options);
+		const optionsValidation = FoodsOptionsSchema(options);
 		if (optionsValidation instanceof type.errors) {
 			throw new FDCValidationError(
 				"Invalid foods options",
@@ -331,7 +351,7 @@ export class FDCClient {
 		const queryString = this.buildQueryParams({});
 		const endpoint = `/foods?${queryString}`;
 
-		return this.makeRequest<Food[]>(endpoint, Food.array(), {
+		return this.makeRequest<Food[]>(endpoint, FoodSchema.array(), {
 			method: "POST",
 			body: JSON.stringify(body),
 		});
@@ -343,7 +363,7 @@ export class FDCClient {
 	async getFoodsList(
 		options: ListOptions = {},
 	): Promise<FoodsListResponse | null> {
-		const optionsValidation = ListOptions(options);
+		const optionsValidation = ListOptionsSchema(options);
 		if (optionsValidation instanceof type.errors) {
 			throw new FDCValidationError(
 				"Invalid list options",
@@ -370,7 +390,7 @@ export class FDCClient {
 
 			return await this.makeRequest<FoodsListResponse>(
 				endpoint,
-				FoodsListResponse,
+				FoodsListResponseSchema,
 			);
 		} catch (error) {
 			if (error instanceof FDCApiError && error.status === 404) {
@@ -388,7 +408,7 @@ export class FDCClient {
 	 */
 	async searchFoods(options: SearchOptions): Promise<SearchResult> {
 		// Validate input options
-		const optionsValidation = SearchOptions(options);
+		const optionsValidation = SearchOptionsSchema(options);
 		if (optionsValidation instanceof type.errors) {
 			throw new FDCValidationError(
 				"Invalid search options",
@@ -424,7 +444,7 @@ export class FDCClient {
 		const queryString = this.buildQueryParams({});
 		const endpoint = `/foods/search?${queryString}`;
 
-		return this.makeRequest<SearchResult>(endpoint, SearchResult, {
+		return this.makeRequest<SearchResult>(endpoint, SearchResultSchema, {
 			method: "POST",
 			body: JSON.stringify(body),
 		});
@@ -456,7 +476,7 @@ export class FDCClient {
 
 		if (dataType) {
 			for (const dt of dataType) {
-				const dtValidation = DataType(dt);
+				const dtValidation = DataTypeSchema(dt);
 				if (dtValidation instanceof type.errors) {
 					throw new FDCValidationError(
 						`Invalid data type: ${dt}`,
@@ -473,7 +493,7 @@ export class FDCClient {
 			pageNumber: 1,
 		});
 
-		return results.foods.length > 0 ? results.foods[0] : null;
+		return results.foods.length > 0 ? (results.foods[0] ?? null) : null;
 	}
 
 	/**
@@ -482,7 +502,7 @@ export class FDCClient {
 	async getFoodsListAlternative(
 		options: ListOptions = {},
 	): Promise<SearchResult> {
-		const optionsValidation = ListOptions(options);
+		const optionsValidation = ListOptionsSchema(options);
 		if (optionsValidation instanceof type.errors) {
 			throw new FDCValidationError(
 				"Invalid list options for alternative method",

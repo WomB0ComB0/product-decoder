@@ -277,6 +277,14 @@ if [ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]; then
   eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 fi
 
+# Bun
+if [ ! command -v bun ]; then
+  curl -fsSL https://bun.sh/install | bash
+  export PATH="$PATH:$HOME/.bun/bin"
+fi
+
+export PATH="$PATH:$HOME/.bun/bin"
+
 # ===== CUSTOM BASH ALIASES =====
 # Source custom aliases if file exists
 if [ -f ~/.bash_aliases ]; then

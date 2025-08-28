@@ -525,3 +525,25 @@ export const YoutubeSearchResponse = type({
 });
 
 export type YoutubeSearchResponse = typeof YoutubeSearchResponse.infer;
+
+// ============================================================================
+// Export ArkType schemas for runtime validation
+
+export const GNewsResponseSchema = GNewsResponse;
+export const SearchRecommendationSchema = SearchRecommendation;
+export const YoutubeSearchResponseSchema = YoutubeSearchResponse;
+export const NewsResponseSchema = NewsResponse;
+export const MediaStackSourcesResponseSchema = MediaStackSourcesResponse;
+export const APIErrorSchema = APIError;
+export const NewsRequestParamsSchema = NewsRequestParams;
+export const SourcesRequestParamsSchema = SourcesRequestParams;
+export const ConstructorOptionsSchema = ConstructorOptions;
+export const FoodSchema = Food;
+export const SearchResultSchema = SearchResult;
+export const FoodsListResponseSchema = FoodsListResponse;
+export const SearchOptionsSchema = SearchOptions;
+export const ListOptionsSchema = ListOptions;
+export const FoodsOptionsSchema = FoodsOptions;
+export const FDCClientConfigSchema = FDCClientConfig;
+export const NewsCategorySchema = NewsCategory;
+export const DataTypeSchema = DataType;

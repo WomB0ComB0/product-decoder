@@ -1,6 +1,11 @@
 import { FetchHttpClient } from "@effect/platform";
 import { Effect, pipe } from "effect";
-import { get } from "@/effect-fetcher";
+import { get } from "@packages/shared";
+import {
+	GNewsResponseSchema,
+	SearchRecommendationSchema,
+	YoutubeSearchResponseSchema
+} from "@packages/shared";
 
 // GNews: search
 export async function gnewsSearch(

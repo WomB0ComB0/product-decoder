@@ -130,8 +130,6 @@ const PRIMITIVE_RULES: Record<Primitive, Token[]> = {
   ],
 };
 
-const LOWER = (s?: string | null) => (s ?? "").toLowerCase();
-
 function squash(meta: PipelineMeta): string {
   const parts = [
     meta.primaryQuery,
@@ -391,36 +389,40 @@ export class AIAnalysisPipeline {
 			const err = await res.json().catch(() => ({}));
 			throw new Error(`Vision error: ${JSON.stringify(err)}`);
 		}
-		const { data } = await res.json();
-		return data as WebDetect;
+		const response = await res.json() as { data: WebDetect };
+		return response.data;
 	}
 
 	static async fetchNews(query: string): Promise<NewsHit[]> {
 		const hits: NewsHit[] = [];
 		try {
 			const g = await gnewsSearch(query, { lang: "en", max: 4 });
-			hits.push(
-				...(g.articles || []).map((a: any) => ({
-					title: a.title,
-					url: a.url,
-					source: a.source?.name,
-					publishedAt: a.publishedAt,
-				})),
-			);
-		} catch (e) {
-			console.warn("GNews error", e);
-		}
-		if (hits.length < 2) {
-			try {
-				const top = await gnewsTopHeadlines({ lang: "en", max: 2 });
+			if (g && 'articles' in g) {
 				hits.push(
-					...(top.articles || []).map((a: any) => ({
+					...(g.articles || []).map((a: any) => ({
 						title: a.title,
 						url: a.url,
 						source: a.source?.name,
 						publishedAt: a.publishedAt,
 					})),
 				);
+			}
+		} catch (e) {
+			console.warn("GNews error", e);
+		}
+		if (hits.length < 2) {
+			try {
+				const top = await gnewsTopHeadlines({ lang: "en", max: 2 });
+				if (top && 'articles' in top) {
+					hits.push(
+						...(top.articles || []).map((a: any) => ({
+							title: a.title,
+							url: a.url,
+							source: a.source?.name,
+							publishedAt: a.publishedAt,
+						})),
+					);
+				}
 			} catch (topErr) {
 				console.warn("GNews top error", topErr);
 			}
@@ -432,7 +434,10 @@ export class AIAnalysisPipeline {
 	static async fetchWebResults(query: string): Promise<CSEResult[]> {
 		try {
 			const results = await googleSearch(query);
-			return results?.items?.slice(0, 5) || [];
+			if (results && 'items' in results) {
+				return results.items?.slice(0, 5) || [];
+			}
+			return [];
 		} catch (e) {
 			console.warn("Google Search error", e);
 			return [];
@@ -442,12 +447,15 @@ export class AIAnalysisPipeline {
 	static async fetchYouTubeVideos(query: string): Promise<YTHit[]> {
 		try {
 			const results = await youtubeSearch(query);
-			return (
-				results?.items?.slice(0, 4).map((it: any) => ({
-					title: it.snippet?.title || it.title,
-					videoId: it.id?.videoId || it.videoId,
-				})) || []
-			);
+			if (results && 'items' in results) {
+				return (
+					results.items?.slice(0, 4).map((it: any) => ({
+						title: it.snippet?.title || it.title,
+						videoId: it.id?.videoId || it.videoId,
+					})) || []
+				);
+			}
+			return [];
 		} catch (e) {
 			console.warn("YouTube Search error", e);
 			return [];
