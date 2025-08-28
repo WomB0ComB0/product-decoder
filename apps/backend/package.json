@@ -8,8 +8,8 @@
     "check": "bunx biome check --write || true",
     "format": "bunx biome format --write || true",
     "dev": "bun run --watch src/server.ts",
-    "build": "echo 'No build step required - Vercel handles TypeScript compilation'",
-    "vercel-build": "echo 'Vercel Functions handle compilation automatically'",
+    "build": "mkdir -p public && echo 'Serverless function - no static files' > public/index.html",
+    "vercel-build": "mkdir -p public && echo 'Serverless function - no static files' > public/index.html",
     "start": "bun run src/server.ts",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org womb0comb0 --project product-decoder-backend ./dist && sentry-cli sourcemaps upload --org womb0comb0 --project product-decoder-backend ./dist"
   },
