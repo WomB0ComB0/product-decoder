@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-// types/mediastack.ts
 // MediaStack News API - https://api.mediastack.com/v1
 import { type } from "arktype";
 
@@ -110,11 +109,7 @@ export type NewsRequestParams = typeof NewsRequestParams.infer;
 export type SourcesRequestParams = typeof SourcesRequestParams.infer;
 export type ConstructorOptions = typeof ConstructorOptions.infer;
 
-// ============================================================================
-
-// types/usda-food.ts
 // USDA Food Data Central API - https://api.nal.usda.gov/fdc/v1
-
 const FoodNutrientDerivation = type({
 	id: "number",
 	code: "string",
@@ -287,9 +282,6 @@ export type ListOptions = typeof ListOptions.infer;
 export type FoodsOptions = typeof FoodsOptions.infer;
 export type FDCClientConfig = typeof FDCClientConfig.infer;
 
-// ============================================================================
-
-// types/gnews.ts
 // GNews API - https://gnews.io/api/v4
 
 const GNewsArticle = type({
@@ -318,9 +310,6 @@ export type TGNewsArticle = typeof GNewsArticle.infer;
 export type TGNewsResponse = typeof GNewsResponse.infer;
 export type TGNewsError = typeof GNewsError.infer;
 
-// ============================================================================
-
-// types/newsapi.ts
 // NewsAPI - https://newsapi.org/
 
 const NewsAPIArticle = type({
@@ -407,9 +396,6 @@ export interface SourcesParams {
 	country?: string;
 }
 
-// ============================================================================
-
-// types/google-search.ts
 // Google Custom Search API - https://customsearch.googleapis.com/customsearch/v1
 
 export const RawCse = type({
@@ -470,9 +456,6 @@ export type SearchParams = {
 	fields?: string;
 };
 
-// ============================================================================
-
-// types/youtube.ts
 // YouTube Data API - https://www.googleapis.com/youtube/v3/search
 
 const ThumbnailDetail = type({
@@ -525,9 +508,6 @@ export const YoutubeSearchResponse = type({
 });
 
 export type YoutubeSearchResponse = typeof YoutubeSearchResponse.infer;
-
-// ============================================================================
-// Export ArkType schemas for runtime validation
 
 export const GNewsResponseSchema = GNewsResponse;
 export const SearchRecommendationSchema = SearchRecommendation;

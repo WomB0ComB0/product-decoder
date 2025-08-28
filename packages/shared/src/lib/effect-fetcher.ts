@@ -9,9 +9,9 @@ declare const EMPTY = "";
 /**
  * @module effect-fetcher
  *
- * Type-safe, Effect-based HTTP data fetching utilities with ArkType runtime validation.
+ * Provides type-safe, Effect-based HTTP data fetching utilities with ArkType runtime validation.
  *
- * This module provides a generic, type-safe fetcher utility and convenience functions for all HTTP verbs.
+ * This module exposes a generic, type-safe fetcher utility and convenience functions for all HTTP verbs.
  * It supports retries, timeouts, custom headers, error handling, runtime validation with ArkType,
  * and integrates with Effect-TS for composable async flows.
  *
@@ -60,17 +60,24 @@ declare const EMPTY = "";
  * ```
  */
 
-// HTTP Method type definition
+/**
+ * Type definition for supported HTTP methods.
+ * Used to restrict the allowed HTTP methods for the fetcher utility.
+ */
 const HttpMethod = type(
 	"'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS' | 'HEAD'",
 );
 
 /**
  * Represents all supported HTTP methods for the fetcher utility.
+ * @typedef {"GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "OPTIONS" | "HEAD"} HttpMethod
  */
 type HttpMethod = typeof HttpMethod.infer;
 
-// Query parameters type definition
+/**
+ * Type definition for query parameters.
+ * Each key is a string, and each value can be a string, number, boolean, null, undefined, or an array of those types.
+ */
 const QueryParams = type({
 	"[string]":
 		"string | number | boolean | undefined | null | (string | number | boolean)[]",
@@ -79,10 +86,14 @@ const QueryParams = type({
 /**
  * Represents a type-safe map of query parameters.
  * Each value can be a string, number, boolean, null, undefined, or an array of those types.
+ * @typedef {Record<string, string | number | boolean | undefined | null | (string | number | boolean)[]>} QueryParams
  */
 export type QueryParams = typeof QueryParams.infer;
 
-// Request body type definition
+/**
+ * Type definition for request body.
+ * Can be an object, array, string, number, boolean, or null.
+ */
 const RequestBody = type(
 	"Record<string, unknown> | unknown[] | string | number | boolean | null",
 );
@@ -90,20 +101,28 @@ const RequestBody = type(
 /**
  * Represents a type-safe request body for HTTP methods that support a body.
  * Can be an object, array, string, number, boolean, or null.
+ * @typedef {Record<string, unknown> | unknown[] | string | number | boolean | null} RequestBody
  */
 type RequestBody = typeof RequestBody.infer;
 
-// Headers type definition
+/**
+ * Type definition for HTTP headers.
+ * Each key and value is a string.
+ */
 const Headers = type({
 	"[string]": "string",
 });
 
 /**
  * Represents HTTP headers as key-value string pairs.
+ * @typedef {Record<string, string>} Headers
  */
 type Headers = typeof Headers.infer;
 
-// Fetcher options type definition
+/**
+ * Type definition for fetcher options.
+ * Used for runtime validation and documentation.
+ */
 const FetcherOptions = type({
 	"retries?": "number",
 	"retryDelay?": "number",
@@ -115,29 +134,39 @@ const FetcherOptions = type({
 
 /**
  * Configuration options for the fetcher utility.
+ * @template T
+ * @property {number} [retries] - Number of times to retry the request on failure.
+ * @property {number} [retryDelay] - Delay in milliseconds between retries.
+ * @property {(error: unknown) => void} [onError] - Optional callback invoked on error.
+ * @property {number} [timeout] - Timeout in milliseconds for the request.
+ * @property {Record<string, string>} [headers] - Additional headers to include in the request.
+ * @property {Type<T>} [schema] - ArkType schema for runtime validation of the response.
+ * @property {AbortSignal} [signal] - Optional AbortSignal to cancel the request.
  */
 export interface FetcherOptions<T = unknown> {
-	/** Number of times to retry the request on failure */
 	retries?: number;
-	/** Delay in milliseconds between retries */
 	retryDelay?: number;
-	/** Optional callback invoked on error */
 	onError?: (error: unknown) => void;
-	/** Timeout in milliseconds for the request */
 	timeout?: number;
-	/** Additional headers to include in the request */
 	headers?: Record<string, string>;
-	/** ArkType schema for runtime validation of the response */
 	schema?: Type<T>;
-	/** Abortsignal */
 	signal?: AbortSignal;
 }
 
 /**
- * Custom error class for validation-specific errors.
- * Includes detailed validation problems from ArkType.
+ * Error thrown when response data fails ArkType schema validation.
+ * Includes detailed validation problems from ArkType, the request URL, the invalid response data, and the attempt number.
+ *
+ * @extends Error
  */
 export class ValidationError extends Error {
+	/**
+	 * @param {string} message - Error message.
+	 * @param {string} url - The URL of the request that failed validation.
+	 * @param {string} problems - ArkType validation problems summary.
+	 * @param {unknown} responseData - The actual response data that failed validation.
+	 * @param {number} [attempt] - The attempt number when the error occurred.
+	 */
 	constructor(
 		message: string,
 		public readonly url: string,
@@ -164,13 +193,17 @@ export class ValidationError extends Error {
 		return this.toString();
 	}
 
-	// 🚩
+	/**
+	 * Returns a string representation of the ValidationError.
+	 * @returns {string}
+	 */
 	toString(): string {
 		return `ValidationError: ${this.message} (URL: ${this.url}${this.attempt ? `, Attempt: ${this.attempt}` : ""})`;
 	}
 
 	/**
-	 * Get a formatted string of all validation problems
+	 * Get a formatted string of all validation problems.
+	 * @returns {string}
 	 */
 	getProblemsString(): string {
 		return this.problems;
@@ -178,10 +211,19 @@ export class ValidationError extends Error {
 }
 
 /**
- * Custom error class for fetcher-specific errors.
+ * Error thrown for fetcher-specific errors, such as network errors, HTTP errors, or request serialization errors.
  * Includes additional context such as the request URL, HTTP status, response data, and attempt number.
+ *
+ * @extends Error
  */
 export class FetcherError extends Error {
+	/**
+	 * @param {string} message - Error message.
+	 * @param {string} url - The URL of the request that failed.
+	 * @param {number} [status] - HTTP status code, if available.
+	 * @param {unknown} [responseData] - The response data, if available.
+	 * @param {number} [attempt] - The attempt number when the error occurred.
+	 */
 	constructor(
 		message: string,
 		public readonly url: string,
@@ -208,16 +250,24 @@ export class FetcherError extends Error {
 		return this.toString();
 	}
 
-	// 🚩
+	/**
+	 * Returns a string representation of the FetcherError.
+	 * @returns {string}
+	 */
 	toString(): string {
 		return `FetcherError: ${this.message} (URL: ${this.url}${this.status ? `, Status: ${this.status}` : ""}${this.attempt ? `, Attempt: ${this.attempt}` : parseInt("0")})`;
 	}
 }
 
-// --- Overloaded function signatures for type safety with ArkType ---
-
 /**
  * Performs a GET request with optional schema validation.
+ *
+ * @template T
+ * @param {string} input - The URL to request.
+ * @param {"GET"} [method] - The HTTP method (must be "GET").
+ * @param {FetcherOptions<T>} [options] - Optional fetcher configuration.
+ * @param {QueryParams} [params] - Optional query parameters.
+ * @returns {Effect.Effect<T, FetcherError | ValidationError, HttpClient.HttpClient>}
  */
 export function fetcher<T = unknown>(
 	input: string,
@@ -228,6 +278,13 @@ export function fetcher<T = unknown>(
 
 /**
  * Performs a GET request with ArkType schema validation and automatic type inference.
+ *
+ * @template S
+ * @param {string} input - The URL to request.
+ * @param {"GET"} method - The HTTP method (must be "GET").
+ * @param {FetcherOptions<Type<S>> & { schema: S }} options - Fetcher configuration with ArkType schema.
+ * @param {QueryParams} [params] - Optional query parameters.
+ * @returns {Effect.Effect<Type<S>, FetcherError | ValidationError, HttpClient.HttpClient>}
  */
 export function fetcher<S extends Type<any>>(
 	input: string,
@@ -242,6 +299,14 @@ export function fetcher<S extends Type<any>>(
 
 /**
  * Performs a POST, PUT, or PATCH request with a request body and optional schema validation.
+ *
+ * @template T
+ * @param {string} input - The URL to request.
+ * @param {"POST" | "PUT" | "PATCH"} method - The HTTP method.
+ * @param {FetcherOptions<T>} [options] - Optional fetcher configuration.
+ * @param {QueryParams} [params] - Optional query parameters.
+ * @param {RequestBody} [body] - Optional request body.
+ * @returns {Effect.Effect<T, FetcherError | ValidationError, HttpClient.HttpClient>}
  */
 export function fetcher<T = unknown>(
 	input: string,
@@ -253,6 +318,14 @@ export function fetcher<T = unknown>(
 
 /**
  * Performs a POST, PUT, or PATCH request with ArkType schema validation and automatic type inference.
+ *
+ * @template S
+ * @param {string} input - The URL to request.
+ * @param {"POST" | "PUT" | "PATCH"} method - The HTTP method.
+ * @param {FetcherOptions<Type<S>> & { schema: S }} options - Fetcher configuration with ArkType schema.
+ * @param {QueryParams} [params] - Optional query parameters.
+ * @param {RequestBody} [body] - Optional request body.
+ * @returns {Effect.Effect<Type<S>, FetcherError | ValidationError, HttpClient.HttpClient>}
  */
 export function fetcher<S extends Type<any>>(
 	input: string,
@@ -268,6 +341,13 @@ export function fetcher<S extends Type<any>>(
 
 /**
  * Performs a DELETE, OPTIONS, or HEAD request with optional schema validation.
+ *
+ * @template T
+ * @param {string} input - The URL to request.
+ * @param {"DELETE" | "OPTIONS" | "HEAD"} method - The HTTP method.
+ * @param {FetcherOptions<T>} [options] - Optional fetcher configuration.
+ * @param {QueryParams} [params] - Optional query parameters.
+ * @returns {Effect.Effect<T, FetcherError | ValidationError, HttpClient.HttpClient>}
  */
 export function fetcher<T = unknown>(
 	input: string,
@@ -281,12 +361,12 @@ export function fetcher<T = unknown>(
  * Supports retries, timeouts, custom headers, runtime validation, and error handling.
  *
  * @template T
- * @param input The URL to request
- * @param method The HTTP method to use
- * @param options Optional fetcher configuration including ArkType schema
- * @param params Optional query parameters
- * @param body Optional request body (for methods that support it)
- * @returns An Effect that resolves to the validated response data of type T
+ * @param {string} input - The URL to request.
+ * @param {HttpMethod} [method="GET"] - The HTTP method to use.
+ * @param {FetcherOptions<T>} [options={}] - Optional fetcher configuration including ArkType schema.
+ * @param {QueryParams} [params] - Optional query parameters.
+ * @param {RequestBody} [body] - Optional request body (for methods that support it).
+ * @returns {Effect.Effect<T, FetcherError | ValidationError, HttpClient.HttpClient>} An Effect that resolves to the validated response data of type T.
  *
  * @example
  * ```ts
@@ -332,6 +412,8 @@ export function fetcher<T = unknown>(
 
 	/**
 	 * Builds a query string from the provided query parameters.
+	 * @param {QueryParams} [params] - The query parameters to serialize.
+	 * @returns {string} The serialized query string.
 	 */
 	const buildQueryString = (params?: QueryParams): string => {
 		if (!params) return EMPTY;
@@ -356,6 +438,9 @@ export function fetcher<T = unknown>(
 
 	/**
 	 * Builds a type-safe HttpClientRequest for the given method and URL.
+	 * @param {HttpMethod} method - The HTTP method.
+	 * @param {string} url - The request URL.
+	 * @returns {HttpClientRequest.HttpClientRequest}
 	 */
 	const buildRequest = (
 		method: HttpMethod,
@@ -386,6 +471,9 @@ export function fetcher<T = unknown>(
 
 	/**
 	 * Validates response data using the provided ArkType schema.
+	 * @param {unknown} data - The response data to validate.
+	 * @param {number} attempt - The attempt number.
+	 * @returns {Effect.Effect<T, ValidationError, never>}
 	 */
 	const validateResponse = (
 		data: unknown,
@@ -444,6 +532,9 @@ export function fetcher<T = unknown>(
 
 		/**
 		 * Wraps an Effect with a timeout, converting timeout errors to FetcherError.
+		 * @template A, E, R
+		 * @param {Effect.Effect<A, E, R>} eff - The effect to wrap with a timeout.
+		 * @returns {Effect.Effect<A, FetcherError | E, R>}
 		 */
 		const withTimeout = <A, E, R>(
 			eff: Effect.Effect<A, E, R>,
@@ -471,6 +562,7 @@ export function fetcher<T = unknown>(
 
 		/**
 		 * Executes the HTTP request, handling errors, HTTP status, response parsing, and validation.
+		 * @returns {Effect.Effect<T, FetcherError | ValidationError, HttpClient.HttpClient>}
 		 */
 		const executeRequest = Effect.gen(function* () {
 			attempt++;
@@ -579,6 +671,12 @@ export function fetcher<T = unknown>(
 /**
  * Convenience function for GET requests with optional schema validation.
  *
+ * @template T
+ * @param {string} url - The URL to request.
+ * @param {FetcherOptions<T>} [options] - Optional fetcher configuration.
+ * @param {QueryParams} [params] - Optional query parameters.
+ * @returns {Effect.Effect<T, FetcherError | ValidationError, HttpClient.HttpClient>}
+ *
  * @example
  * ```ts
  * import { type } from 'arktype';
@@ -599,6 +697,15 @@ export function get<T = unknown>(
 	params?: QueryParams,
 ): Effect.Effect<T, FetcherError | ValidationError, HttpClient.HttpClient>;
 
+/**
+ * GET request with ArkType schema validation and automatic type inference.
+ *
+ * @template S
+ * @param {string} url - The URL to request.
+ * @param {FetcherOptions<Type<S>> & { schema: S }} options - Fetcher configuration with ArkType schema.
+ * @param {QueryParams} [params] - Optional query parameters.
+ * @returns {Effect.Effect<Type<S>, FetcherError | ValidationError, HttpClient.HttpClient>}
+ */
 export function get<S extends Type<any>>(
 	url: string,
 	options: FetcherOptions<Type<S>> & { schema: S },
@@ -609,6 +716,10 @@ export function get<S extends Type<any>>(
 	HttpClient.HttpClient
 >;
 
+/**
+ * Implementation for GET requests.
+ * @private
+ */
 export function get<T = unknown>(
 	url: string,
 	options?: FetcherOptions<T>,
@@ -619,6 +730,13 @@ export function get<T = unknown>(
 
 /**
  * Convenience function for POST requests with optional schema validation.
+ *
+ * @template T
+ * @param {string} url - The URL to request.
+ * @param {RequestBody} [body] - Optional request body.
+ * @param {FetcherOptions<T>} [options] - Optional fetcher configuration.
+ * @param {QueryParams} [params] - Optional query parameters.
+ * @returns {Effect.Effect<T, FetcherError | ValidationError, HttpClient.HttpClient>}
  */
 export function post<T = unknown>(
 	url: string,
@@ -627,6 +745,16 @@ export function post<T = unknown>(
 	params?: QueryParams,
 ): Effect.Effect<T, FetcherError | ValidationError, HttpClient.HttpClient>;
 
+/**
+ * POST request with ArkType schema validation and automatic type inference.
+ *
+ * @template S
+ * @param {string} url - The URL to request.
+ * @param {RequestBody} body - The request body.
+ * @param {FetcherOptions<Type<S>> & { schema: S }} options - Fetcher configuration with ArkType schema.
+ * @param {QueryParams} [params] - Optional query parameters.
+ * @returns {Effect.Effect<Type<S>, FetcherError | ValidationError, HttpClient.HttpClient>}
+ */
 export function post<S extends Type<any>>(
 	url: string,
 	body: RequestBody,
@@ -638,6 +766,10 @@ export function post<S extends Type<any>>(
 	HttpClient.HttpClient
 >;
 
+/**
+ * Implementation for POST requests.
+ * @private
+ */
 export function post<T = unknown>(
 	url: string,
 	body?: RequestBody,
@@ -649,6 +781,13 @@ export function post<T = unknown>(
 
 /**
  * Convenience function for PUT requests with optional schema validation.
+ *
+ * @template T
+ * @param {string} url - The URL to request.
+ * @param {RequestBody} [body] - Optional request body.
+ * @param {FetcherOptions<T>} [options] - Optional fetcher configuration.
+ * @param {QueryParams} [params] - Optional query parameters.
+ * @returns {Effect.Effect<T, FetcherError | ValidationError, HttpClient.HttpClient>}
  */
 export function put<T = unknown>(
 	url: string,
@@ -657,6 +796,16 @@ export function put<T = unknown>(
 	params?: QueryParams,
 ): Effect.Effect<T, FetcherError | ValidationError, HttpClient.HttpClient>;
 
+/**
+ * PUT request with ArkType schema validation and automatic type inference.
+ *
+ * @template S
+ * @param {string} url - The URL to request.
+ * @param {RequestBody} body - The request body.
+ * @param {FetcherOptions<Type<S>> & { schema: S }} options - Fetcher configuration with ArkType schema.
+ * @param {QueryParams} [params] - Optional query parameters.
+ * @returns {Effect.Effect<Type<S>, FetcherError | ValidationError, HttpClient.HttpClient>}
+ */
 export function put<S extends Type<any>>(
 	url: string,
 	body: RequestBody,
@@ -668,6 +817,10 @@ export function put<S extends Type<any>>(
 	HttpClient.HttpClient
 >;
 
+/**
+ * Implementation for PUT requests.
+ * @private
+ */
 export function put<T = unknown>(
 	url: string,
 	body?: RequestBody,
@@ -679,6 +832,13 @@ export function put<T = unknown>(
 
 /**
  * Convenience function for PATCH requests with optional schema validation.
+ *
+ * @template T
+ * @param {string} url - The URL to request.
+ * @param {RequestBody} [body] - Optional request body.
+ * @param {FetcherOptions<T>} [options] - Optional fetcher configuration.
+ * @param {QueryParams} [params] - Optional query parameters.
+ * @returns {Effect.Effect<T, FetcherError | ValidationError, HttpClient.HttpClient>}
  */
 export function patch<T = unknown>(
 	url: string,
@@ -687,6 +847,16 @@ export function patch<T = unknown>(
 	params?: QueryParams,
 ): Effect.Effect<T, FetcherError | ValidationError, HttpClient.HttpClient>;
 
+/**
+ * PATCH request with ArkType schema validation and automatic type inference.
+ *
+ * @template S
+ * @param {string} url - The URL to request.
+ * @param {RequestBody} body - The request body.
+ * @param {FetcherOptions<Type<S>> & { schema: S }} options - Fetcher configuration with ArkType schema.
+ * @param {QueryParams} [params] - Optional query parameters.
+ * @returns {Effect.Effect<Type<S>, FetcherError | ValidationError, HttpClient.HttpClient>}
+ */
 export function patch<S extends Type<any>>(
 	url: string,
 	body: RequestBody,
@@ -698,6 +868,10 @@ export function patch<S extends Type<any>>(
 	HttpClient.HttpClient
 >;
 
+/**
+ * Implementation for PATCH requests.
+ * @private
+ */
 export function patch<T = unknown>(
 	url: string,
 	body?: RequestBody,
@@ -709,6 +883,12 @@ export function patch<T = unknown>(
 
 /**
  * Convenience function for DELETE requests with optional schema validation.
+ *
+ * @template T
+ * @param {string} url - The URL to request.
+ * @param {FetcherOptions<T>} [options] - Optional fetcher configuration.
+ * @param {QueryParams} [params] - Optional query parameters.
+ * @returns {Effect.Effect<T, FetcherError | ValidationError, HttpClient.HttpClient>}
  */
 export function del<T = unknown>(
 	url: string,
@@ -716,6 +896,15 @@ export function del<T = unknown>(
 	params?: QueryParams,
 ): Effect.Effect<T, FetcherError | ValidationError, HttpClient.HttpClient>;
 
+/**
+ * DELETE request with ArkType schema validation and automatic type inference.
+ *
+ * @template S
+ * @param {string} url - The URL to request.
+ * @param {FetcherOptions<Type<S>> & { schema: S }} options - Fetcher configuration with ArkType schema.
+ * @param {QueryParams} [params] - Optional query parameters.
+ * @returns {Effect.Effect<Type<S>, FetcherError | ValidationError, HttpClient.HttpClient>}
+ */
 export function del<S extends Type<any>>(
 	url: string,
 	options: FetcherOptions<Type<S>> & { schema: S },
@@ -726,6 +915,10 @@ export function del<S extends Type<any>>(
 	HttpClient.HttpClient
 >;
 
+/**
+ * Implementation for DELETE requests.
+ * @private
+ */
 export function del<T = unknown>(
 	url: string,
 	options?: FetcherOptions<T>,
@@ -736,6 +929,12 @@ export function del<T = unknown>(
 
 /**
  * Convenience function for OPTIONS requests with optional schema validation.
+ *
+ * @template T
+ * @param {string} url - The URL to request.
+ * @param {FetcherOptions<T>} [options] - Optional fetcher configuration.
+ * @param {QueryParams} [params] - Optional query parameters.
+ * @returns {Effect.Effect<T, FetcherError | ValidationError, HttpClient.HttpClient>}
  */
 export function options<T = unknown>(
 	url: string,
@@ -743,6 +942,15 @@ export function options<T = unknown>(
 	params?: QueryParams,
 ): Effect.Effect<T, FetcherError | ValidationError, HttpClient.HttpClient>;
 
+/**
+ * OPTIONS request with ArkType schema validation and automatic type inference.
+ *
+ * @template S
+ * @param {string} url - The URL to request.
+ * @param {FetcherOptions<Type<S>> & { schema: S }} options - Fetcher configuration with ArkType schema.
+ * @param {QueryParams} [params] - Optional query parameters.
+ * @returns {Effect.Effect<Type<S>, FetcherError | ValidationError, HttpClient.HttpClient>}
+ */
 export function options<S extends Type<any>>(
 	url: string,
 	options: FetcherOptions<Type<S>> & { schema: S },
@@ -753,6 +961,10 @@ export function options<S extends Type<any>>(
 	HttpClient.HttpClient
 >;
 
+/**
+ * Implementation for OPTIONS requests.
+ * @private
+ */
 export function options<T = unknown>(
 	url: string,
 	options?: FetcherOptions<T>,
@@ -763,6 +975,12 @@ export function options<T = unknown>(
 
 /**
  * Convenience function for HEAD requests with optional schema validation.
+ *
+ * @template T
+ * @param {string} url - The URL to request.
+ * @param {FetcherOptions<T>} [options] - Optional fetcher configuration.
+ * @param {QueryParams} [params] - Optional query parameters.
+ * @returns {Effect.Effect<T, FetcherError | ValidationError, HttpClient.HttpClient>}
  */
 export function head<T = unknown>(
 	url: string,
@@ -770,6 +988,15 @@ export function head<T = unknown>(
 	params?: QueryParams,
 ): Effect.Effect<T, FetcherError | ValidationError, HttpClient.HttpClient>;
 
+/**
+ * HEAD request with ArkType schema validation and automatic type inference.
+ *
+ * @template S
+ * @param {string} url - The URL to request.
+ * @param {FetcherOptions<Type<S>> & { schema: S }} options - Fetcher configuration with ArkType schema.
+ * @param {QueryParams} [params] - Optional query parameters.
+ * @returns {Effect.Effect<Type<S>, FetcherError | ValidationError, HttpClient.HttpClient>}
+ */
 export function head<S extends Type<any>>(
 	url: string,
 	options: FetcherOptions<Type<S>> & { schema: S },
@@ -780,6 +1007,10 @@ export function head<S extends Type<any>>(
 	HttpClient.HttpClient
 >;
 
+/**
+ * Implementation for HEAD requests.
+ * @private
+ */
 export function head<T = unknown>(
 	url: string,
 	options?: FetcherOptions<T>,
@@ -792,6 +1023,10 @@ export function head<T = unknown>(
 
 /**
  * Helper function to create a paginated response schema.
+ *
+ * @template T
+ * @param {Type<T>} itemSchema - The ArkType schema for a single item in the paginated data array.
+ * @returns {Type<{ data: T[]; pagination: { page: number; pageSize: number; total: number; totalPages: number } }>} The paginated response schema.
  *
  * @example
  * ```ts
@@ -820,7 +1055,11 @@ export const createPaginatedSchema = <T>(itemSchema: Type<T>) => {
 };
 
 /**
- * Helper function to create an API response wrapper schema.
+ * Helper function to create a generic API response wrapper schema.
+ *
+ * @template T
+ * @param {Type<T>} dataSchema - The ArkType schema for the data property of the API response.
+ * @returns {Type<{ success: boolean; data: T; message?: string; errors?: string[] }>} The API response wrapper schema.
  *
  * @example
  * ```ts

@@ -1,11 +1,29 @@
+/**
+ * Copyright  
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { FetchHttpClient } from "@effect/platform";
 import { Effect, pipe } from "effect";
-import { get } from "@packages/shared";
+import { get, post } from "@packages/shared";
 import {
 	GNewsResponseSchema,
 	SearchRecommendationSchema,
 	YoutubeSearchResponseSchema
 } from "@packages/shared";
+
+declare const BASE_API_URL = "http://localhost:3001";
 
 // GNews: search
 export async function gnewsSearch(
@@ -14,7 +32,7 @@ export async function gnewsSearch(
 ) {
 	const effect = pipe(
 		get(
-			"/api/gnews/search",
+			`${BASE_API_URL}/api/gnews/search`,
 			{ schema: GNewsResponseSchema },
 			{ q, lang: opts?.lang ?? "en", max: opts?.max ?? 5 },
 		),
@@ -43,7 +61,7 @@ export async function gnewsTopHeadlines(opts?: {
 }) {
 	const effect = pipe(
 		get(
-			"/api/gnews/top-headlines",
+			`${BASE_API_URL}/api/gnews/top-headlines`,
 			{ schema: GNewsResponseSchema },
 			opts ?? {},
 		),
@@ -56,7 +74,7 @@ export async function gnewsTopHeadlines(opts?: {
 export async function googleSearch(q: string) {
 	const effect = pipe(
 		get(
-			"/api/google/cse",
+			`${BASE_API_URL}/api/google/cse`,
 			{ schema: SearchRecommendationSchema },
 			{ q, num: 10 },
 		),
@@ -71,7 +89,7 @@ export async function googleSearch(q: string) {
 export async function youtubeSearch(q: string, pageToken?: string) {
 	const effect = pipe(
 		get(
-			"/api/google/youtube/search",
+			`${BASE_API_URL}/api/google/youtube/search`,
 			{ schema: YoutubeSearchResponseSchema },
 			{ q, pageToken, maxResults: 10 },
 		),
@@ -79,5 +97,24 @@ export async function youtubeSearch(q: string, pageToken?: string) {
 	);
 	const res = await Effect.runPromise(effect);
 	if (!res) throw new Error("Invalid YouTube response");
+	return res;
+}
+
+// Reverse image search function (new addition based on your API)
+export async function reverseImageSearch(imageFile: File) {
+	const formData = new FormData();
+	formData.append('file', imageFile);
+
+	const effect = pipe(
+    post(`${BASE_API_URL}/api/google/reverse-image`, { body: formData }),
+		Effect.provide(FetchHttpClient.layer),
+  );
+
+	const res = await Effect.runPromise(effect);
+
+	if (!res) {
+		throw new Error(`Reverse image search failed`);
+	}
+
 	return res;
 }
