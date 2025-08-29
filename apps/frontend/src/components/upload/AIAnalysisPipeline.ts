@@ -1,5 +1,5 @@
 /**
- * Copyright  
+ * Copyright
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -400,7 +400,7 @@ export class AIAnalysisPipeline {
 	static async reverseImageSearch(file: File): Promise<WebDetect> {
 		const fd = new FormData();
 		fd.append("file", file, file.name);
-		const res = await fetch("/api/google/reverse-image", { method: "POST", body: fd });
+		const res = await fetch("/api/v1/google/reverse-image", { method: "POST", body: fd });
 		if (!res.ok) {
 			const err = await res.json().catch(() => ({}));
 			throw new Error(`Vision error: ${JSON.stringify(err)}`);

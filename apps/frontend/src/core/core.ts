@@ -1,5 +1,5 @@
 /**
- * Copyright  
+ * Copyright
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import {
 	YoutubeSearchResponseSchema
 } from "@packages/shared";
 
-declare const BASE_API_URL = "http://localhost:3001";
+const BASE_API_URL = process.env.BASE_URL || "http://localhost:3000/api/v1"
 
 // GNews: search
 export async function gnewsSearch(
@@ -32,7 +32,7 @@ export async function gnewsSearch(
 ) {
 	const effect = pipe(
 		get(
-			`${BASE_API_URL}/api/gnews/search`,
+			`${BASE_API_URL}/gnews/search`,
 			{ schema: GNewsResponseSchema },
 			{ q, lang: opts?.lang ?? "en", max: opts?.max ?? 5 },
 		),
@@ -61,7 +61,7 @@ export async function gnewsTopHeadlines(opts?: {
 }) {
 	const effect = pipe(
 		get(
-			`${BASE_API_URL}/api/gnews/top-headlines`,
+			`${BASE_API_URL}/gnews/top-headlines`,
 			{ schema: GNewsResponseSchema },
 			opts ?? {},
 		),
@@ -74,7 +74,7 @@ export async function gnewsTopHeadlines(opts?: {
 export async function googleSearch(q: string) {
 	const effect = pipe(
 		get(
-			`${BASE_API_URL}/api/google/cse`,
+			`${BASE_API_URL}/google/cse`,
 			{ schema: SearchRecommendationSchema },
 			{ q, num: 10 },
 		),
@@ -89,7 +89,7 @@ export async function googleSearch(q: string) {
 export async function youtubeSearch(q: string, pageToken?: string) {
 	const effect = pipe(
 		get(
-			`${BASE_API_URL}/api/google/youtube/search`,
+			`${BASE_API_URL}/google/youtube/search`,
 			{ schema: YoutubeSearchResponseSchema },
 			{ q, pageToken, maxResults: 10 },
 		),
@@ -106,7 +106,7 @@ export async function reverseImageSearch(imageFile: File) {
 	formData.append('file', imageFile);
 
 	const effect = pipe(
-    post(`${BASE_API_URL}/api/google/reverse-image`, { body: formData }),
+    post(`${BASE_API_URL}/google/reverse-image`, { body: formData }),
 		Effect.provide(FetchHttpClient.layer),
   );
 

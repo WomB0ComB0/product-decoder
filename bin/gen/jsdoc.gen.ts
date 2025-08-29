@@ -913,7 +913,7 @@ async function main() {
 }
 
 // Run if called directly
-if (process.main) {
+if (require.main === module) {
   main().catch(console.error);
 }
 

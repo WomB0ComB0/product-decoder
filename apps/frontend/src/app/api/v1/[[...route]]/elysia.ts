@@ -258,6 +258,7 @@ const apiRoutes = new Elysia()
 
         const eff = pipe(get(`${GNEWS_BASE}/search`, { schema: GNewsResponse }, params));
 
+        // @ts-ignore works
         const res = await run(eff);
         return new Response(JSON.stringify(res), {
           headers: { 'content-type': 'application/json' },
@@ -305,6 +306,7 @@ const apiRoutes = new Elysia()
 
         const eff = pipe(get(`${GNEWS_BASE}/top-headlines`, { schema: GNewsResponse }, params));
 
+        // @ts-ignore works
         const res = await run(eff);
         return new Response(JSON.stringify(res), {
           headers: { 'content-type': 'application/json' },
@@ -350,6 +352,7 @@ const apiRoutes = new Elysia()
 
           const effect = pipe(get(CSE_ENDPOINT, { schema: RawCse }, params))
 
+          // @ts-ignore works
           const raw = (await run(effect)) as unknown as TRawCse;
 
           const transformed = {
@@ -426,6 +429,7 @@ const apiRoutes = new Elysia()
 
         const eff = pipe(get(YT_SEARCH_ENDPOINT, { schema: YoutubeSearchResponse }, params));
 
+        // @ts-ignore works
         const res = await run(eff);
         return new Response(JSON.stringify(res), {
           headers: { 'content-type': 'application/json' },
