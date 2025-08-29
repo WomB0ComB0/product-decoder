@@ -28,8 +28,8 @@ import type React from "react";
 import { SecureImageUpload } from "./index";
 const UploadExample: React.FC = () => {
 	return (
-		<div className="min-h-screen bg-[var(--background)] p-0 pt-8">
-			<div className="w-full">
+		<div className="min-h-screen bg-[var(--background)] p-0 pt-8 container">
+			<div className="w-full h-full max-w-3xl mx-auto p-4 border rounded-lg bg-[var(--card)] shadow-sm">
 					<SecureImageUpload
 						maxFiles={10}
 						maxSize={10 * 1024 * 1024}

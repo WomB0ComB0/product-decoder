@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Mike Odnis
+ * Copyright 2025 Product Decoder
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ const retry = async (fn: () => Promise<any>, retries = 3, delay = 1_000) => {
   }
 };
 
-if (process.main) {
+if (require.main === module) {
   const isDev = Bun.env.NODE_ENV !== 'production';
 
   try {

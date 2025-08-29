@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Mike Odnis
+ * Copyright 2025 Product Decoder
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,12 @@
 
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { ArrowUpRight, PlayCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, PlayCircle } from "lucide-react";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { SignedIn, SignedOut } from "@clerk/nextjs"
 
 export default function Home() {
   const [activeCard, setActiveCard] = useState("nutrition_facts");
@@ -47,9 +48,19 @@ export default function Home() {
             <Link href="/" className="text-[#D26B36]">
               Home
             </Link>
-            <Link href="/login/" className="hover:text-[#D26B36]">
-              Log In
+            <Link href="#try" className="hover:text-[#D26B36]">
+              Try out
             </Link>
+            <SignedIn>
+              <Link href="/dashboard" className="hover:text-[#D26B36]">
+                Dashboard
+              </Link>
+            </SignedIn>
+            <SignedOut>
+              <Link href="/login/" className="hover:text-[#D26B36]">
+                Log In
+              </Link>
+            </SignedOut>
           </nav>
         </div>
       </header>
@@ -66,13 +77,25 @@ export default function Home() {
             </p>
 
             <div className="mt-10 flex items-center gap-10">
-              <Link
-                href="#try"
-                className="bg-[#5D5FEF] text-white font-semibold px-6 py-3 rounded-md shadow-md flex items-center gap-2"
-              >
-                <ArrowUpRight className="w-4 h-4" />
-                Try Product Decoder
-              </Link>
+              <SignedIn>
+                <Link
+                  href="/dashboard"
+                  className="bg-[#5D5FEF] text-white font-semibold px-6 py-3 rounded-md shadow-md flex items-center gap-2"
+                >
+                  <ArrowUpRight className="w-4 h-4" />
+                  Try Product Decoder
+                </Link>
+              </SignedIn>
+              <SignedOut>
+                <Link
+                  // @ts-ignore
+                  href="/login"
+                  className="bg-[#5D5FEF] text-white font-semibold px-6 py-3 rounded-md shadow-md flex items-center gap-2"
+                >
+                  <ArrowUpRight className="w-4 h-4" />
+                  Try Product Decoder
+                </Link>
+              </SignedOut>
 
               <Button variant={`ghost`} className="text-gray-700 font-medium flex items-center gap-2">
                 <PlayCircle className="w-5 h-5" />

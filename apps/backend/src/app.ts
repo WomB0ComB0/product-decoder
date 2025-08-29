@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Mike Odnis
+ * Copyright 2025 Product Decoder
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -764,7 +764,7 @@ export const app = new Elysia({ name: 'Server API' })
   // --- CORS configuration for cross-origin requests ---
   .use(
     cors({
-      origin: process.env.FRONTEND_URL || 'http://localhost:5173', // Configurable frontend URL
+      origin: process.env.FRONTEND_URL || 'http://localhost:3000', // Configurable frontend URL
       methods: ['GET', 'POST', 'OPTIONS'], // Specify allowed HTTP methods
       allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers
       credentials: true, // Allow credentials (e.g., cookies, authorization headers)

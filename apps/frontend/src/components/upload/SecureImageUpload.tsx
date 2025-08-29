@@ -397,7 +397,7 @@ const SecureImageUpload: React.FC<ImageUploadProps> = ({
   );
 
   return (
-    <div className={`w-full max-w-7xl mx-auto space-y-8 ${className}`}>
+    <div className={`w-full mx-auto space-y-8 ${className}`}>
       {showHeader && headerContent}
 
       <ImageUploadArea

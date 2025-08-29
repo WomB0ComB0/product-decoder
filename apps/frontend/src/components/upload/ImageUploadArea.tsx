@@ -54,14 +54,14 @@ const ImageUploadArea: React.FC<ImageUploadAreaProps> = ({
       style={{
         backgroundColor: "#5865F2", // blue panel
         borderRadius: 24,
-  paddingTop: 36,
-  paddingBottom: 36,
-  paddingLeft: 40,
-  paddingRight: 40,
-  boxShadow: "0 18px 36px rgba(0,0,0,0.08)",
-  // removed outer outline (teal ring)
-  width: "100%",
-  maxWidth: "none",
+        paddingTop: 36,
+        paddingBottom: 36,
+        paddingLeft: 40,
+        paddingRight: 40,
+        boxShadow: "0 18px 36px rgba(0,0,0,0.08)",
+        // removed outer outline (teal ring)
+        width: "100%",
+        maxWidth: "none",
       }}
     >
       {/* Hidden input */}

@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Mike Odnis
+ * Copyright 2025 Product Decoder
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,4 +23,4 @@ export type { Prisma } from '@prisma/client';
 export { withAccelerate } from '@prisma/extension-accelerate';
 
 // Re-export generated Zod schemas
-export * from './generated/schemas';
+// export * from './generated/schemas';
