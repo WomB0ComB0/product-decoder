@@ -25,9 +25,6 @@ export interface ImageUploadAreaProps {
   onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
   onDragLeave: (e: React.DragEvent<HTMLDivElement>) => void;
   onFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  maxFiles?: number; // ✅ restored
-  maxSize?: number; // ✅ restored
-  formatFileSize?: (size: number) => string; // ✅ restored
 }
 
 const ImageUploadArea: React.FC<ImageUploadAreaProps> = ({
@@ -38,9 +35,6 @@ const ImageUploadArea: React.FC<ImageUploadAreaProps> = ({
   onDragOver,
   onDragLeave,
   onFileSelect,
-  maxFiles,
-  maxSize,
-  formatFileSize,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -60,13 +54,14 @@ const ImageUploadArea: React.FC<ImageUploadAreaProps> = ({
       style={{
         backgroundColor: "#5865F2", // blue panel
         borderRadius: 24,
-        paddingTop: 36,
-        paddingBottom: 36,
-        paddingLeft: 40,
-        paddingRight: 40,
-        boxShadow: "0 18px 36px rgba(0,0,0,0.08)",
-        width: "100%",
-        maxWidth: "none",
+  paddingTop: 36,
+  paddingBottom: 36,
+  paddingLeft: 40,
+  paddingRight: 40,
+  boxShadow: "0 18px 36px rgba(0,0,0,0.08)",
+  // removed outer outline (teal ring)
+  width: "100%",
+  maxWidth: "none",
       }}
     >
       {/* Hidden input */}
@@ -97,13 +92,7 @@ const ImageUploadArea: React.FC<ImageUploadAreaProps> = ({
         {/* Yellow circular icon */}
         <div
           className="flex items-center justify-center mb-6"
-          style={{
-            width: 80,
-            height: 80,
-            borderRadius: 9999,
-            backgroundColor: "#FFD671",
-            boxShadow: "0 6px 12px rgba(0,0,0,0.08)",
-          }}
+          style={{ width: 80, height: 80, borderRadius: 9999, backgroundColor: "#FFD671", boxShadow: "0 6px 12px rgba(0,0,0,0.08)" }}
         >
           {isUploading ? (
             <Loader2 className="w-8 h-8 text-[#5865F2] animate-spin" />
@@ -135,17 +124,7 @@ const ImageUploadArea: React.FC<ImageUploadAreaProps> = ({
             fontSize: 16,
           }}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="white"
-            strokeWidth={1.8}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
             <path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7" />
             <polyline points="16 3 16 7 8 7 8 3" />
             <path d="M12 11v6" />
@@ -153,18 +132,10 @@ const ImageUploadArea: React.FC<ImageUploadAreaProps> = ({
           </svg>
           <span style={{ color: "white", lineHeight: 1 }}>{"Choose File"}</span>
         </button>
-
-        {/* ✅ Show file limits */}
-        {maxFiles && maxSize && (
-          <p className="mt-4 text-sm text-white/80">
-            Max {maxFiles} files, up to {formatFileSize ? formatFileSize(maxSize) : `${Math.round(maxSize / 1024 / 1024)}MB`} each
-          </p>
-        )}
       </div>
     </div>
   );
 };
 
 export default ImageUploadArea;
-
 
