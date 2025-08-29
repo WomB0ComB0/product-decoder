@@ -1,6 +1,6 @@
 ("use strict");
 
-import { HttpClient, HttpClientRequest } from "@effect/platform";
+import { FetchHttpClient, HttpClient, HttpClientRequest } from "@effect/platform";
 import { type Type, type } from "arktype";
 import { Duration, Effect, pipe, Schedule } from "effect";
 
@@ -1083,3 +1083,20 @@ export const createApiResponseSchema = <T>(dataSchema: Type<T>) => {
 		errors: "string[]?",
 	});
 };
+
+/**
+ * Runs an Effect in the Effect runtime, providing the FetchHttpClient layer if needed.
+ * @template A The success type of the Effect.
+ * @template E The error type of the Effect.
+ * @template R The environment type of the Effect.
+ * @param {Effect.Effect<A, E, R>} eff - The Effect to run.
+ * @returns {Promise<A>} A promise resolving to the Effect's result.
+ */
+export function run<A, E>(eff: Effect.Effect<A, E, never>): Promise<A>;
+export function run<A, E>(eff: Effect.Effect<A, E, typeof import("@effect/platform/HttpClient").HttpClient>): Promise<A>;
+export function run<A, E, R>(eff: Effect.Effect<A, E, R>): Promise<A> {
+  const provided = (eff as Effect.Effect<A, E, typeof import("@effect/platform/HttpClient").HttpClient | never>).pipe(
+    Effect.provide(FetchHttpClient.layer),
+  );
+  return Effect.runPromise(provided as Effect.Effect<A, E, never>);
+}

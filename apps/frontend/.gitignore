@@ -77,3 +77,5 @@ next-env.d.ts
 /api/
 /server/build
 /public/build
+
+credentials.json

@@ -23,3 +23,10 @@
  */
 export const parseCodePath = (context: any, fnName: Function): string =>
 	`location: ${process.cwd()}${__filename} @${fnName.name}: ${context}`;
+
+/**
+ * Stringifies an object with 2-space indentation for pretty-printing JSON.
+ * @param {object} o - The object to stringify.
+ * @returns {string} The pretty-printed JSON string.
+ */
+export const Stringify = (o: object): string => JSON.stringify(o, null, 2);

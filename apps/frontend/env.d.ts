@@ -19,6 +19,7 @@ declare global {
       readonly NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL: string;
       readonly NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: string;
       readonly CLERK_SECRET_KEY: string;
+      readonly GCP_SERVICE_ACCOUNT_JSON: string;
     }
   }
 }

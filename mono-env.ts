@@ -202,7 +202,7 @@ async function main() {
 }
 
 // Execute the script
-if (process.main) {
+if (require.main === module) {
   main().catch((error) => {
     console.error('❌ Script failed:', error);
     process.exit(1);
