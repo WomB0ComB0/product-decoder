@@ -17,7 +17,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Providers } from "./providers";
+import { Provider } from "@/providers";
+import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,7 +31,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "React TanStarter",
+  title: "Product Decoder",
   description: "A minimal starter template for 🏝️ TanStack Start.",
 };
 
@@ -42,7 +43,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script
+        <Script
           dangerouslySetInnerHTML={{
             __html: `document.documentElement.classList.toggle(
               'dark',
@@ -52,9 +53,9 @@ export default function RootLayout({
         />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Providers>
+        <Provider>
           {children}
-        </Providers>
+        </Provider>
       </body>
     </html>
   );

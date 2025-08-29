@@ -14,6 +14,11 @@ declare global {
       readonly GITHUB_CLIENT_SECRET: string;
       readonly GOOGLE_CLIENT_ID: string;
       readonly GOOGLE_CLIENT_SECRET: string;
+      readonly NEXT_PUBLIC_CLERK_SIGN_IN_URL: string;
+      readonly NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL: string;
+      readonly NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL: string;
+      readonly NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: string;
+      readonly CLERK_SECRET_KEY: string;
     }
   }
 }

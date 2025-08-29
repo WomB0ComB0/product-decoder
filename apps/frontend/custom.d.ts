@@ -3,10 +3,10 @@
  * TypeScript module declarations for importing various asset types (images, audio, video, JSON)
  * and global interface augmentations for browser APIs and React. These declarations enable
  * TypeScript-aware imports and type safety for static assets and custom browser features
- * used throughout the GDG on Campus Farmingdale State College project.
+ * used throughout the Mike Odnis project.
  *
  * @copyright
- *   Copyright 2025 GDG on Campus Farmingdale State College
+ *   Copyright 2025 Mike Odnis
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.

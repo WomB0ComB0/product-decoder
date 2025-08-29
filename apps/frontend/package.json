@@ -41,10 +41,12 @@
     ]
   },
   "dependencies": {
+    "@clerk/clerk-react": "^5.45.0",
     "@clerk/nextjs": "^6.31.4",
     "@hookform/resolvers": "^5.2.1",
     "@million/lint": "^1.0.14",
     "@packages/db": "workspace:*",
+    "@packages/logger": "workspace:*",
     "@packages/shared": "workspace:*",
     "@playwright/test": "^1.54.2",
     "@radix-ui/react-accordion": "^1.2.12",
@@ -105,6 +107,7 @@
     "react-resizable-panels": "^3.0.4",
     "recharts": "3.1.2",
     "sonner": "^2.0.7",
+    "superjson": "^2.2.2",
     "svix": "^1.74.1",
     "tailwind-merge": "^3.3.1",
     "tslog": "^4.9.3",
