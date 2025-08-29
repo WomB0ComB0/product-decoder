@@ -21,7 +21,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import EnhancedAIAnalysis from "./AIAnalysisLoader";
 import { AIAnalysisPipeline, type PipelineResult } from "./AIAnalysisPipeline";
 // Import compartmentalized components
-import EmptyState from "./EmptyState";
+// EmptyState removed: not rendering the empty upload prompt here
 import FileListHeader from "./FileListHeader";
 import {
   formatFileSize,
@@ -64,6 +64,8 @@ export interface ImageUploadProps {
   description?: string;
   /** Whether to use enhanced AI analysis */
   useEnhancedAnalysis?: boolean;
+  /** Whether to render the header/title above the upload area */
+  showHeader?: boolean;
 }
 
 // Custom hook for file management logic
@@ -153,6 +155,7 @@ const SecureImageUpload: React.FC<ImageUploadProps> = ({
   title = "Upload & Analyze Your Images",
   description = "Drop your images and let our AI provide instant insights, from object detection to nutritional analysis and web research.",
   useEnhancedAnalysis = true,
+  showHeader = true,
 }) => {
   // Enhanced state management with custom hooks
   const [isUploading, setIsUploading] = useState(false);
@@ -395,19 +398,16 @@ const SecureImageUpload: React.FC<ImageUploadProps> = ({
 
   return (
     <div className={`w-full max-w-7xl mx-auto space-y-8 ${className}`}>
-      {headerContent}
+      {showHeader && headerContent}
 
       <ImageUploadArea
         isUploading={isUploading}
         dragActive={dragActive}
-        maxFiles={maxFiles}
-        maxSize={maxSize}
         acceptedFormats={acceptedFormats}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onFileSelect={handleFileSelect}
-        formatFileSize={formatFileSize}
       />
 
       {errors.length > 0 && (
@@ -468,9 +468,7 @@ const SecureImageUpload: React.FC<ImageUploadProps> = ({
         </div>
       )}
 
-      {files.length === 0 && !isUploading && (
-        <EmptyState onUploadClick={() => fileInputRef.current?.click()} />
-      )}
+
     </div>
   );
 };
