@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Mike Odnis
+ * Copyright 2025 Product Decoder
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,48 +14,42 @@
  * limitations under the License.
  */
 
+// app/layout.tsx (Server Component)
+import { Provider } from "@/providers";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import { Provider } from "@/providers";
 import Script from "next/script";
+import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
+const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Product Decoder",
   description: "A minimal starter template for 🏝️ TanStack Start.",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+const themeInit = `
+(function () {
+  try {
+    var ls = localStorage.theme;
+    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var enable = ls === 'dark' || (!ls && prefersDark);
+    document.documentElement.classList.toggle('dark', enable);
+  } catch (_) {}
+})();
+`;
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <Script
-          dangerouslySetInnerHTML={{
-            __html: `document.documentElement.classList.toggle(
-              'dark',
-              localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
-            )`,
-          }}
-        />
+        <Script id="theme-init" strategy="beforeInteractive">
+          {themeInit}
+        </Script>
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Provider>
-          {children}
-        </Provider>
+        <Provider>{children}</Provider>
       </body>
     </html>
   );

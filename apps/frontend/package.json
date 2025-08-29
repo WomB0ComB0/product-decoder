@@ -121,6 +121,7 @@
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "babel-plugin-react-compiler": "latest",
+    "cypress-wait-until": "^3.0.2",
     "tailwindcss": "^4.1.11",
     "tw-animate-css": "^1.3.6",
     "typescript": "^5.9.2",
