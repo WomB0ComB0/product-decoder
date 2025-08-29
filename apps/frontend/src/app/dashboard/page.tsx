@@ -16,43 +16,8 @@
 
 "use client";
 
-import { useUser } from "@clerk/nextjs";
-import { SignOutButton } from "@clerk/nextjs";
 import UploadExample from "@/components/upload/UploadExample";
 
 export default function DashboardPage() {
-  const { isSignedIn, isLoaded } = useUser();
-
-  if (!isLoaded) {
-    return (
-      <div className="flex flex-col items-center gap-1">
-        <div>Loading...</div>
-      </div>
-    );
-  }
-
-  if (!isSignedIn) {
-    return (
-      <div className="flex flex-col items-center gap-1">
-        <div>Please sign in to access the dashboard</div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex flex-col items-center gap-8 p-8 w-full max-w-7xl mx-auto">
-      <h1 className="text-2xl font-bold">Upload / Dashboard</h1>
-
-      {/* Render the upload demo as the primary dashboard surface */}
-      <UploadExample />
-
-      <div className="mt-6">
-        <SignOutButton>
-          <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">
-            Sign Out
-          </button>
-        </SignOutButton>
-      </div>
-    </div>
-  );
+  return <UploadExample />;
 }
