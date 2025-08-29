@@ -27,6 +27,9 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 export const metadata: Metadata = {
   title: "Product Decoder",
   description: "A minimal starter template for 🏝️ TanStack Start.",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 const themeInit = `

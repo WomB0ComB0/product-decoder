@@ -533,9 +533,34 @@ export function createFDCClient(
 	config?: Partial<FDCClientConfig>,
 ): FDCClient {
 	if (typeof apiKey !== "string" || apiKey.trim() === "") {
-		throw new FDCValidationError("API key must be a non-empty string", {
-			apiKey,
-		});
+		// Return a no-op client for local development when an API key is not provided.
+		// This prevents runtime exceptions in client/demo UIs while still allowing
+		// production environments to use a real FDC client.
+		// eslint-disable-next-line no-console
+		console.warn("FDC API key missing — returning a no-op FDC client for local dev.");
+
+		const noopClient: Partial<FDCClient> = {
+			async findFood(_query: string) {
+				return null;
+			},
+			async getFoodNutrients(_fdcId: number, _nutrientIds?: number[]) {
+				return [];
+			},
+			async getFoodsList(_options?: ListOptions) {
+				return null;
+			},
+			async searchFoods(_options: SearchOptions) {
+				// Return an empty, but valid-looking SearchResult shape to avoid crashes
+				return { foods: [], totalHits: 0 } as unknown as SearchResult;
+			},
+			async getFood(_fdcId: number) {
+				// Return an empty object shaped like Food only when strictly needed by runtime;
+				// here we throw so callers who expect detailed data are aware.
+				throw new FDCApiError("FDC client not configured in local dev");
+			},
+		};
+
+		return noopClient as FDCClient;
 	}
 
 	const fullConfig: FDCClientConfig = {

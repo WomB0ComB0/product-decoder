@@ -18,9 +18,10 @@
 
 import { useUser } from "@clerk/nextjs";
 import { SignOutButton } from "@clerk/nextjs";
+import UploadExample from "@/components/upload/UploadExample";
 
 export default function DashboardPage() {
-  const { isSignedIn, user, isLoaded } = useUser();
+  const { isSignedIn, isLoaded } = useUser();
 
   if (!isLoaded) {
     return (
@@ -39,23 +40,19 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="flex flex-col items-center gap-4 p-8">
-      <h1 className="text-2xl font-bold">Welcome to Product Decoder Dashboard</h1>
-      
-      <div className="bg-card text-card-foreground rounded-md border p-4 max-w-md">
-        <h2 className="text-lg font-semibold mb-2">User Information</h2>
-        <div className="space-y-2">
-          <p><strong>Name:</strong> {user.firstName} {user.lastName}</p>
-          <p><strong>Email:</strong> {user.emailAddresses[0]?.emailAddress}</p>
-          <p><strong>User ID:</strong> {user.id}</p>
-        </div>
-      </div>
+    <div className="flex flex-col items-center gap-8 p-8 w-full max-w-7xl mx-auto">
+      <h1 className="text-2xl font-bold">Upload / Dashboard</h1>
 
-      <SignOutButton>
-        <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">
-          Sign Out
-        </button>
-      </SignOutButton>
+      {/* Render the upload demo as the primary dashboard surface */}
+      <UploadExample />
+
+      <div className="mt-6">
+        <SignOutButton>
+          <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">
+            Sign Out
+          </button>
+        </SignOutButton>
+      </div>
     </div>
   );
 }
