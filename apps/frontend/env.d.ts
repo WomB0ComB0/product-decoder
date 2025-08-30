@@ -19,7 +19,14 @@ declare global {
       readonly NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL: string;
       readonly NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: string;
       readonly CLERK_SECRET_KEY: string;
-      readonly GCP_SERVICE_ACCOUNT_JSON: string;
+      readonly NEWS_API_KEY: string;
+      readonly GNEWS_API_KEY: string;
+      readonly ARTICLE_API_KEY: string;
+      readonly FOOD_API_KEY: string;
+      readonly GOOGLE_API_KEY: string;
+      readonly GOOGLE_SEARCH_ENGINE_ID: string;
+      readonly GEMINI_API_KEY: string;
+      readonly GCP_CREDENTIALS_JSON: string;
     }
   }
 }

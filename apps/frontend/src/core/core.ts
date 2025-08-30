@@ -15,15 +15,13 @@
  */
 
 import { FetchHttpClient } from "@effect/platform";
-import { Effect, pipe } from "effect";
-import { get, post } from "@packages/shared";
 import {
-	GNewsResponseSchema,
-	SearchRecommendationSchema,
-	YoutubeSearchResponseSchema
+  get, GNewsResponseSchema, post, SearchRecommendationSchema,
+  YoutubeSearchResponseSchema
 } from "@packages/shared";
+import { Effect, pipe } from "effect";
 
-const BASE_API_URL = process.env.BASE_URL || "http://localhost:3000/api/v1"
+const BASE_API_URL = process.env.BASE_URL ? `${process.env.BASE_URL}/api/v1` : "http://localhost:3000/api/v1"
 
 // GNews: search
 export async function gnewsSearch(
@@ -59,15 +57,31 @@ export async function gnewsTopHeadlines(opts?: {
 		| "health";
 	max?: number;
 }) {
-	const effect = pipe(
-		get(
-			`${BASE_API_URL}/gnews/top-headlines`,
-			{ schema: GNewsResponseSchema },
-			opts ?? {},
-		),
-		Effect.provide(FetchHttpClient.layer),
-	);
-	return Effect.runPromise(effect);
+	try {
+		console.log('gnewsTopHeadlines called with opts:', opts);
+		console.log('BASE_API_URL:', BASE_API_URL);
+		
+		const effect = pipe(
+			get(
+				`${BASE_API_URL}/gnews/top-headlines`,
+				{ schema: GNewsResponseSchema },
+				opts ?? {},
+			),
+			Effect.provide(FetchHttpClient.layer),
+		);
+		
+		const res = await Effect.runPromise(effect);
+		console.log('gnewsTopHeadlines response:', res);
+		
+		if (!res) {
+			throw new Error("Invalid GNews response");
+		}
+		
+		return res;
+	} catch (error) {
+		console.error('gnewsTopHeadlines error:', error);
+		throw error;
+	}
 }
 
 // Google CSE: returns your trimmed DTO (SearchRecommendation)

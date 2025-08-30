@@ -15,10 +15,10 @@
  */
 
 import {
-	gnewsSearch,
-	gnewsTopHeadlines,
-	googleSearch,
-	youtubeSearch,
+  gnewsSearch,
+  gnewsTopHeadlines,
+  googleSearch,
+  youtubeSearch,
 } from "@/core";
 import { createFDCClient, newsapi } from "@/lib/api";
 
@@ -403,6 +403,13 @@ export class AIAnalysisPipeline {
 		const res = await fetch("/api/v1/google/reverse-image", { method: "POST", body: fd });
 		if (!res.ok) {
 			const err = await res.json().catch(() => ({}));
+			
+			// Handle API not enabled error gracefully
+			if (err.error === 'Google Cloud Vision API not enabled' && err.fallback) {
+				console.warn('Google Cloud Vision API not enabled, using fallback data');
+				return err.fallback;
+			}
+			
 			throw new Error(`Vision error: ${JSON.stringify(err)}`);
 		}
 		const response = await res.json() as { data: WebDetect };

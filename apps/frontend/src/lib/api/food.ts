@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Mike Odnis
+ * Copyright 2025 Product Decoder
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,25 +15,25 @@
  */
 
 import {
-	AbridgedFood,
-	DataType,
-	FDCClientConfig,
-	Food,
-	FoodNutrient,
-	FoodsListResponse,
-	FoodsOptions,
-	ListOptions,
-	SearchOptions,
-	SearchResult,
-	// Import schemas for runtime validation
-	FDCClientConfigSchema,
-	FoodSchema,
-	FoodsOptionsSchema,
-	ListOptionsSchema,
-	SearchOptionsSchema,
-	SearchResultSchema,
-	FoodsListResponseSchema,
-	DataTypeSchema,
+  AbridgedFood,
+  DataType,
+  DataTypeSchema,
+  FDCClientConfig,
+  // Import schemas for runtime validation
+  FDCClientConfigSchema,
+  Food,
+  FoodNutrient,
+  FoodSchema,
+  FoodsListResponse,
+  FoodsListResponseSchema,
+  FoodsOptions,
+  FoodsOptionsSchema,
+  ListOptions,
+  ListOptionsSchema,
+  SearchOptions,
+  SearchOptionsSchema,
+  SearchResult,
+  SearchResultSchema,
 } from "@packages/shared";
 import { type } from "arktype";
 
@@ -97,9 +97,9 @@ export class FDCClient {
 
 		const validatedConfig = configValidation as FDCClientConfig;
 
-		if (!validatedConfig.apiKey || validatedConfig.apiKey.trim() === "") {
-			throw new Error("API key is required");
-		}
+		// if (!validatedConfig.apiKey || validatedConfig.apiKey.trim() === "") {
+		// 	throw new Error("API key is required");
+		// }
 
 		this.apiKey = validatedConfig.apiKey;
 		this.baseUrl = validatedConfig.baseUrl || "https://api.nal.usda.gov/fdc/v1";
@@ -532,36 +532,11 @@ export function createFDCClient(
 	apiKey: string,
 	config?: Partial<FDCClientConfig>,
 ): FDCClient {
-	if (typeof apiKey !== "string" || apiKey.trim() === "") {
-		// Return a no-op client for local development when an API key is not provided.
-		// This prevents runtime exceptions in client/demo UIs while still allowing
-		// production environments to use a real FDC client.
-		// eslint-disable-next-line no-console
-		console.warn("FDC API key missing — returning a no-op FDC client for local dev.");
-
-		const noopClient: Partial<FDCClient> = {
-			async findFood(_query: string) {
-				return null;
-			},
-			async getFoodNutrients(_fdcId: number, _nutrientIds?: number[]) {
-				return [];
-			},
-			async getFoodsList(_options?: ListOptions) {
-				return null;
-			},
-			async searchFoods(_options: SearchOptions) {
-				// Return an empty, but valid-looking SearchResult shape to avoid crashes
-				return { foods: [], totalHits: 0 } as unknown as SearchResult;
-			},
-			async getFood(_fdcId: number) {
-				// Return an empty object shaped like Food only when strictly needed by runtime;
-				// here we throw so callers who expect detailed data are aware.
-				throw new FDCApiError("FDC client not configured in local dev");
-			},
-		};
-
-		return noopClient as FDCClient;
-	}
+	// if (typeof apiKey !== "string" || apiKey.trim() === "") {
+	// 	throw new FDCValidationError("API key must be a non-empty string", {
+	// 		apiKey,
+	// 	});
+	// }
 
 	const fullConfig: FDCClientConfig = {
 		apiKey,

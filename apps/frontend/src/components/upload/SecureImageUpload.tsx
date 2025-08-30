@@ -1,5 +1,5 @@
 /**
- * Copyright  
+ * Copyright
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Sparkles } from "lucide-react";
 import React, { useCallback, useMemo, useRef, useState } from "react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 // Import utilities
 import EnhancedAIAnalysis from "./AIAnalysisLoader";
 import { AIAnalysisPipeline, type PipelineResult } from "./AIAnalysisPipeline";
@@ -24,9 +24,9 @@ import { AIAnalysisPipeline, type PipelineResult } from "./AIAnalysisPipeline";
 // EmptyState removed: not rendering the empty upload prompt here
 import FileListHeader from "./FileListHeader";
 import {
-  formatFileSize,
-  type ValidationError,
-  validateFile,
+    formatFileSize,
+    validateFile,
+    type ValidationError,
 } from "./FileValidation";
 import ImageCard from "./ImageCard";
 import ImageUploadArea from "./ImageUploadArea";
@@ -175,7 +175,7 @@ const SecureImageUpload: React.FC<ImageUploadProps> = ({
 
   // Memoized AI pipeline instance
   const aiPipeline = useMemo(() => {
-    return new AIAnalysisPipeline(process.env.VITE_FOOD_API_KEY ?? "");
+    return new AIAnalysisPipeline(process.env.FOOD_API_KEY ?? "Au309WBqjULcqE7ih4lvYB9PaqUgUt8fze0DJE7k");
   }, []);
 
   // Memoized validation function

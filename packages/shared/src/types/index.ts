@@ -291,9 +291,12 @@ const GNewsArticle = type({
 	url: "string",
 	image: "string",
 	publishedAt: "string",
+	lang: "string",
 	source: {
+		id: "string",
 		name: "string",
 		url: "string",
+		country: "string",
 	},
 });
 

@@ -15,21 +15,21 @@
  */
 
 import {
-	APIError,
-	ConstructorOptions,
-	NewsCategory,
-	NewsRequestParams,
-	NewsResponse,
-	SourcesRequestParams,
-	MediaStackSourcesResponse,
-	// Import the schemas for runtime validation
-	APIErrorSchema,
-	ConstructorOptionsSchema,
-	NewsCategorySchema,
-	NewsRequestParamsSchema,
-	NewsResponseSchema,
-	SourcesRequestParamsSchema,
-	MediaStackSourcesResponseSchema,
+    APIError,
+    // Import the schemas for runtime validation
+    APIErrorSchema,
+    ConstructorOptions,
+    ConstructorOptionsSchema,
+    MediaStackSourcesResponse,
+    MediaStackSourcesResponseSchema,
+    NewsCategory,
+    NewsCategorySchema,
+    NewsRequestParams,
+    NewsRequestParamsSchema,
+    NewsResponse,
+    NewsResponseSchema,
+    SourcesRequestParams,
+    SourcesRequestParamsSchema,
 } from "@packages/shared";
 import { type } from "arktype";
 
@@ -51,7 +51,7 @@ export class MediastackAPI {
 			}
 		}
 
-		this.apiKey = apiKey || process.env.VITE_ARTICLE_API_KEY || "";
+		this.apiKey = apiKey || process.env.ARTICLE_API_KEY || "";
 		if (!this.apiKey) {
 			throw new Error(
 				"API key is required. Set ARTICLE_API_KEY environment variable or pass it to constructor.",

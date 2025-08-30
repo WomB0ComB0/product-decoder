@@ -1,16 +1,16 @@
-import { Elysia } from "elysia";
-import { apiRoutes, utilityRoutes } from "./elysia";
-import { logger } from "@packages/shared";
 import { Stringify } from "@/utils";
-import { SocketAddress } from "bun";
 import { cors } from '@elysiajs/cors';
 import { opentelemetry } from '@elysiajs/opentelemetry';
 import { serverTiming } from '@elysiajs/server-timing';
 import { swagger } from '@elysiajs/swagger';
+import { logger } from "@packages/shared";
+import { SocketAddress } from "bun";
+import { Elysia } from "elysia";
 import { ip } from 'elysia-ip';
 import { DefaultContext, type Generator, rateLimit } from 'elysia-rate-limit';
 import { elysiaHelmet } from 'elysiajs-helmet';
 import { batchSpanProcessor, IS_VERCEL, otelResource, permission, version } from "./constants";
+import { apiRoutes, utilityRoutes } from "./elysia";
 
 /**
  * Generates a unique identifier for rate limiting based on the request's IP address.
@@ -22,6 +22,11 @@ import { batchSpanProcessor, IS_VERCEL, otelResource, permission, version } from
 const ipGenerator: Generator<{ ip: SocketAddress }> = (_r, _s, { ip }) => ip?.address ?? 'unknown';
 
 const app = new Elysia({ prefix: "/api/v1" })
+  .onParse(({ request, contentType }) => {
+    if (contentType === 'multipart/form-data') {
+      return request.formData();
+    }
+  })
   .use(utilityRoutes)
   .use(apiRoutes)
   .use(
@@ -205,7 +210,7 @@ export const PATCH = app.handle;
  * Gracefully shuts down telemetry on Vercel using waitUntil if available.
  * For local development, flushes the batch span processor.
  */
-export const shutdown = async (): Promise<void> => {
+const shutdown = async (): Promise<void> => {
   if (IS_VERCEL) {
     // On Vercel, we can't rely on process signals, so this is mainly for cleanup
     logger.info('Vercel function cleanup');

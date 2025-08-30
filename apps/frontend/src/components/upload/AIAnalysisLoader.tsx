@@ -1,5 +1,5 @@
 /**
- * Copyright  
+ * Copyright
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,12 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import {
-	AIAnalysisPipeline,
-	type CSEResult,
-	type NewsHit,
-	type PipelineResult,
-	type WebDetect,
-	type YTHit,
+  AIAnalysisPipeline,
+  type CSEResult,
+  type NewsHit,
+  type PipelineResult,
+  type WebDetect,
+  type YTHit,
 } from "./AIAnalysisPipeline";
 
 // Custom error component for AI analysis
@@ -68,7 +68,7 @@ export const useReverseImageSearch = (file: File | null) => {
 
 		try {
 			const aiPipeline = new AIAnalysisPipeline(
-				process.env.VITE_FOOD_API_KEY ?? "",
+				process.env.FOOD_API_KEY ?? "",
 			);
 			const result = await aiPipeline.reverseImage(file);
 			setData(result);
@@ -297,7 +297,7 @@ export const EnhancedAIAnalysis: React.FC<{
 	const [error, setError] = useState<Error | null>(null);
 
 	const aiPipeline = React.useMemo(() => {
-		return new AIAnalysisPipeline(process.env.VITE_FOOD_API_KEY ?? "");
+		return new AIAnalysisPipeline(process.env.FOOD_API_KEY ?? "");
 	}, []);
 
 	useEffect(() => {

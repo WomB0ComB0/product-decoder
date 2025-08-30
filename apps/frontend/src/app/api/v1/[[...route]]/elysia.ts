@@ -1,11 +1,10 @@
 import { Stringify } from "@/utils";
 import { record } from "@elysiajs/opentelemetry";
-import { get, GNewsResponse, logger, RawCse, SearchRecommendation, TRawCse, YoutubeSearchResponse } from "@packages/shared";
+import vision from '@google-cloud/vision';
+import { get, GNewsResponse, logger, RawCse, run, SearchRecommendation, TRawCse, YoutubeSearchResponse } from "@packages/shared";
+import { pipe } from "effect";
 import Elysia from "elysia";
 import { CSE_ENDPOINT, GNEWS_API_KEY, GNEWS_BASE, GOOGLE_API_KEY, GOOGLE_CSE_CX, IS_VERCEL, version, YT_API_KEY, YT_SEARCH_ENDPOINT } from "./constants";
-import { pipe } from "effect";
-import vision from '@google-cloud/vision';
-import { run } from '@packages/shared'
 /**
  * Middleware for timing and logging the duration of each request.
  * Adds a `start` timestamp to the store before handling,
@@ -28,7 +27,10 @@ const timingMiddleware = new Elysia()
 const client = new vision.ImageAnnotatorClient(
   process.env.GCP_SERVICE_ACCOUNT_JSON
     ? { credentials: JSON.parse(process.env.GCP_SERVICE_ACCOUNT_JSON || (() => {throw Error("GCP_SERVICE_ACCOUNT_JSON is missing")})()) as any }
-    : { keyFilename: '../../../../../credentials.json' },
+    : { 
+        projectId: '', // Explicitly specify the project ID
+        keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS || './credentials.json' 
+      },
 );
 
 /**
@@ -193,37 +195,84 @@ const apiRoutes = new Elysia()
      */
     async ({ body }) => {
       return record('reverse-image.post', async () => {
-        // Use Elysia's body parameter instead of request.formData()
-        const form = body as FormData;
-        const file = form.get('file');
+        try {
+          // Handle FormData from body parameter
+          const form = body as FormData;
+          
+          if (!form || typeof form.get !== 'function') {
+            return new Response(JSON.stringify({ error: 'Invalid FormData' }), {
+              status: 400,
+              headers: { 'content-type': 'application/json' },
+            });
+          }
+          
+          const file = form.get('file');
 
-        if (!(file instanceof File)) {
-          return new Response(JSON.stringify({ error: 'No file provided' }), {
-            status: 400,
+          if (!(file instanceof File)) {
+            return new Response(JSON.stringify({ error: 'No file provided' }), {
+              status: 400,
+              headers: { 'content-type': 'application/json' },
+            });
+          }
+
+          if (!/^image\//.test(file.type)) {
+            return new Response(JSON.stringify({ error: 'Unsupported media type' }), {
+              status: 415,
+              headers: { 'content-type': 'application/json' },
+            });
+          }
+
+          const ab = await file.arrayBuffer();
+          const content = Buffer.from(ab);
+
+          const [res] = await client.webDetection({ image: { content } });
+          const data = normalizeWebDetection(res);
+
+          return new Response(JSON.stringify({ ok: true, data }), {
+            headers: { 'content-type': 'application/json' },
+          });
+        } catch (error) {
+          console.error('Google Vision API error:', error);
+          
+          // Check if it's the API not enabled error
+          if (error instanceof Error && error.message && error.message.includes('Cloud Vision API has not been used') && error.message.includes('disabled')) {
+            return new Response(JSON.stringify({ 
+              error: 'Google Cloud Vision API not enabled',
+              details: 'Please enable the Cloud Vision API in your Google Cloud Console',
+              solution: 'Visit: https://console.developers.google.com/apis/api/vision.googleapis.com/overview',
+              fallback: {
+                webEntities: [],
+                fullMatchingImages: [],
+                partialMatchingImages: [],
+                pagesWithMatchingImages: []
+              }
+            }), {
+              status: 503, // Service Unavailable
+              headers: { 'content-type': 'application/json' },
+            });
+          }
+          
+          // Enhanced error response with more details
+          const errorResponse = {
+            error: 'Google Vision API error',
+            details: error instanceof Error ? error.message : 'Unknown error',
+            code: (error as any)?.code || 'UNKNOWN',
+            projectId: 'upheld-welder-470600-i4',
+            credentials: process.env.GOOGLE_APPLICATION_CREDENTIALS ? 'Environment variable set' : 'Environment variable not set',
+            timestamp: new Date().toISOString()
+          };
+          
+          console.error('Detailed error response:', errorResponse);
+          
+          return new Response(JSON.stringify(errorResponse), {
+            status: 500,
             headers: { 'content-type': 'application/json' },
           });
         }
-
-        if (!/^image\//.test(file.type)) {
-          return new Response(JSON.stringify({ error: 'Unsupported media type' }), {
-            status: 415,
-            headers: { 'content-type': 'application/json' },
-          });
-        }
-
-        const ab = await file.arrayBuffer();
-        const content = Buffer.from(ab);
-
-        const [res] = await client.webDetection({ image: { content } });
-        const data = normalizeWebDetection(res);
-
-        return new Response(JSON.stringify({ ok: true, data }), {
-          headers: { 'content-type': 'application/json' },
-        });
       });
     },
     {
-      type: 'formdata', // Tell Elysia to expect FormData
+      type: 'formdata',
       detail: {
         summary: 'Reverse image search',
         description: 'Upload an image for reverse search using Google Vision API',
@@ -284,33 +333,70 @@ const apiRoutes = new Elysia()
      */
     async ({ query }) => {
       return record('gnews.headlines.get', async () => {
-        const p = query as Record<string, string>;
-        const params = {
-          apikey: GNEWS_API_KEY,
-          lang: p.lang,
-          country: p.country,
-          max: p.max,
-          nullable: p.nullable,
-          category: p.category as
-            | 'general'
-            | 'world'
-            | 'nation'
-            | 'business'
-            | 'technology'
-            | 'entertainment'
-            | 'sports'
-            | 'science'
-            | 'health'
-            | undefined,
-        };
+        try {
+          console.log('GNews top-headlines called with query:', query);
+          
+          const p = query as Record<string, string>;
+          const params = {
+            apikey: GNEWS_API_KEY,
+            lang: p.lang,
+            country: p.country,
+            max: p.max,
+            nullable: p.nullable,
+            category: p.category as
+              | 'general'
+              | 'world'
+              | 'nation'
+              | 'business'
+              | 'technology'
+              | 'entertainment'
+              | 'sports'
+              | 'science'
+              | 'health'
+              | undefined,
+          };
 
-        const eff = pipe(get(`${GNEWS_BASE}/top-headlines`, { schema: GNewsResponse }, params));
+          console.log('GNews API params:', { ...params, apikey: '***' });
 
-        // @ts-ignore works
-        const res = await run(eff);
-        return new Response(JSON.stringify(res), {
-          headers: { 'content-type': 'application/json' },
-        });
+          const eff = pipe(get(`${GNEWS_BASE}/top-headlines`, { schema: GNewsResponse }, params));
+
+          // @ts-ignore works
+          const res = await run(eff);
+          
+          console.log('GNews API response received:', { 
+            totalArticles: res?.totalArticles, 
+            articlesCount: res?.articles?.length 
+          });
+
+          return new Response(JSON.stringify(res), {
+            headers: { 
+              'content-type': 'application/json',
+              'Access-Control-Allow-Origin': '*',
+              'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+              'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+            },
+          });
+        } catch (error) {
+          console.error('GNews top-headlines error:', error);
+          
+          const errorResponse = {
+            error: 'GNews API error',
+            details: error instanceof Error ? error.message : 'Unknown error',
+            timestamp: new Date().toISOString(),
+            endpoint: '/gnews/top-headlines',
+            params: { ...query, apikey: '***' }
+          };
+          
+          return new Response(JSON.stringify(errorResponse), {
+            status: 500,
+            headers: { 
+              'content-type': 'application/json',
+              'Access-Control-Allow-Origin': '*',
+              'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+              'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+            },
+          });
+        }
       });
     },
     {
@@ -446,4 +532,5 @@ const apiRoutes = new Elysia()
   );
 
 
-export { utilityRoutes, apiRoutes }
+export { apiRoutes, utilityRoutes };
+
