@@ -17,11 +17,11 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { SignedIn, SignedOut } from "@clerk/nextjs";
 import { ArrowUpRight, PlayCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { SignedIn, SignedOut } from "@clerk/nextjs"
 
 export default function Home() {
   const [activeCard, setActiveCard] = useState("nutrition_facts");
@@ -52,7 +52,7 @@ export default function Home() {
               Try out
             </Link>
             <SignedIn>
-              <Link href="/dashboard" className="hover:text-[#D26B36]">
+              <Link href="/upload" className="hover:text-[#D26B36]">
                 Dashboard
               </Link>
             </SignedIn>
@@ -79,7 +79,7 @@ export default function Home() {
             <div className="mt-10 flex items-center gap-10">
               <SignedIn>
                 <Link
-                  href="/dashboard"
+                  href="/upload"
                   className="bg-[#5D5FEF] text-white font-semibold px-6 py-3 rounded-md shadow-md flex items-center gap-2"
                 >
                   <ArrowUpRight className="w-4 h-4" />

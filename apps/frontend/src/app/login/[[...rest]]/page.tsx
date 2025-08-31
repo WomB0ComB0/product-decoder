@@ -16,8 +16,8 @@
 
 "use client";
 
-import { SignIn } from "@clerk/nextjs";
 import { Card, CardContent } from "@/components/ui/card";
+import { SignIn } from "@clerk/nextjs";
 
 export default function LoginPage() {
   return (
@@ -232,7 +232,7 @@ export default function LoginPage() {
                 spacingUnit: "1rem"
               }
             }}
-            redirectUrl="/dashboard"
+            redirectUrl="/upload"
             routing="hash"
                       />
         </CardContent>

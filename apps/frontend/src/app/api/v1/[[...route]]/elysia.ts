@@ -5,6 +5,7 @@ import { get, GNewsResponse, logger, RawCse, run, SearchRecommendation, TRawCse,
 import { pipe } from "effect";
 import Elysia from "elysia";
 import { CSE_ENDPOINT, GNEWS_API_KEY, GNEWS_BASE, GOOGLE_API_KEY, GOOGLE_CSE_CX, IS_VERCEL, version, YT_API_KEY, YT_SEARCH_ENDPOINT } from "./constants";
+
 /**
  * Middleware for timing and logging the duration of each request.
  * Adds a `start` timestamp to the store before handling,
@@ -28,7 +29,7 @@ const client = new vision.ImageAnnotatorClient(
   process.env.GCP_SERVICE_ACCOUNT_JSON
     ? { credentials: JSON.parse(process.env.GCP_SERVICE_ACCOUNT_JSON || (() => {throw Error("GCP_SERVICE_ACCOUNT_JSON is missing")})()) as any }
     : { 
-        projectId: '', // Explicitly specify the project ID
+        projectId: 'upheld-welder-470600-i4', // Explicitly specify the project ID
         keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS || './credentials.json' 
       },
 );
