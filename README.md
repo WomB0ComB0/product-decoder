@@ -22,6 +22,9 @@ Product Decoder is a monorepo that provides a visual product recognition and met
 
 This repository includes a Next.js frontend, a Bun-based backend, a small shared package set, and a Prisma-powered database layer.
 
+## Demo
+https://github.com/user-attachments/assets/c431a248-5016-489d-8a1e-9c6b013b0efb
+
 ## Quick overview
 - Frontend: `apps/frontend` — Next.js (App Router), TypeScript, Tailwind CSS, UI components and the image upload flow.
 - Backend: `apps/backend` — Bun-powered API and server utilities.
