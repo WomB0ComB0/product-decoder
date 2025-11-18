@@ -18,8 +18,23 @@
 
 Product Decoder is a cutting-edge monorepo application designed to provide a seamless visual product recognition and metadata extraction experience. Simply upload a product photo, and instantly receive a wealth of structured information, including nutrition facts, price history, store availability, and more.
 
+## 🎥 Demo
+
+See Product Decoder in action! Watch how easy it is to upload a product image and get instant, comprehensive insights:
+
+https://github.com/user-attachments/assets/c431a248-5016-489d-8a1e-9c6b013b0efb
+
+> **Demo Highlights:**
+> - Intuitive drag-and-drop image upload
+> - Real-time AI-powered product recognition
+> - Instant display of nutrition facts, pricing, and availability
+> - Seamless user experience with fast processing
+
+---
+
 ## 📖 Table of Contents
 
+- [🎥 Demo](#-demo)
 - [🚀 Overview / Introduction](#-overview--introduction)
 - [✨ Feature Highlights](#-feature-highlights)
 - [🗺️ Architecture & Design](#️-architecture--design)
@@ -124,13 +139,14 @@ graph TD
     D --> F(Database - Prisma ORM)
     F --> G[Data Store - PostgreSQL/SQLite]
 
-    subgraph Monorepo Structure
-        B -- "apps/frontend"
-        D -- "apps/backend"
-        F -- "packages/db"
-        H[Shared Utilities] -- "packages/shared"
-        B -- H
-        D -- H
+    subgraph Monorepo_Structure["Monorepo Structure"]
+        B --- BPath["apps/frontend"]
+        D --- DPath["apps/backend"]
+        F --- FPath["packages/db"]
+        H[Shared Utilities]
+        H --- HPath["packages/shared"]
+        B --> H
+        D --> H
     end
 
     style A fill:#e0f7fa,stroke:#00796b,stroke-width:2px
@@ -141,7 +157,6 @@ graph TD
     style F fill:#d7ccc8,stroke:#795548,stroke-width:2px
     style G fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
     style H fill:#ffecb3,stroke:#ffc107,stroke-width:2px
-
 ```
 _**Explanation:**_
 *   **User**: Interacts directly with the Frontend.
